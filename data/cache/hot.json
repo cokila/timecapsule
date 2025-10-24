@@ -1,0 +1,33 @@
+{
+  "generated": 1737628800000,
+  "version": "1.0",
+  "count": 2,
+  "hot": [
+    {
+      "id": "pred_001",
+      "author": "crypto_master",
+      "title": "Bitcoin nel 2026",
+      "category": "crypto",
+      "created": 1737628800000,
+      "revealDate": 1767225600000,
+      "encrypted": "U2FsdGVkX1...",
+      "revealed": false,
+      "views": 1234
+    },
+    {
+      "id": "pred_002",
+      "author": "oracle_pro",
+      "title": "Super Bowl 2025",
+      "category": "sport",
+      "created": 1735036800000,
+      "revealDate": 1737628800000,
+      "revealed": true,
+      "plaintext": "Kansas City Chiefs vincerà Super Bowl 2025 contro Philadelphia Eagles 24-21",
+      "result": "correct",
+      "views": 5678
+    }
+  ],
+  "trending": [],
+  "recentRevealed": [],
+  "nearExpiry": []
+}

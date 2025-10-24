@@ -1,0 +1,16 @@
+{
+  "id": "pred_example_001",
+  "author": "demo_user",
+  "username": "Demo User",
+  "title": "Bitcoin nel 2026",
+  "category": "crypto",
+  "language": "it",
+  "created": 1737628800000,
+  "revealDate": 1767225600000,
+  "commitHash": "a1b2c3d4e5f6...",
+  "encrypted": "U2FsdGVkX1...",
+  "revealed": false,
+  "revealNonce": null,
+  "views": 1234,
+  "comments": 12
+}
