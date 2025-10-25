@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Salvataggio</title>
+</head>
+<body>
+    <h1>Test Salvataggio Predizioni</h1>
+    <button onclick="testSave()">Test Save</button>
+    <button onclick="checkStorage()">Check Storage</button>
+    <pre id="output"></pre>
+
+    <script src="cluster-storage.js"></script>
+    <script>
+        const output = document.getElementById('output');
+
+        async function testSave() {
+            output.textContent = 'Testing save...\n';
+
+            // Use existing GitHub config from localStorage
+            // Make sure you configured it in Settings first!
+            const hasGitHub = localStorage.getItem('githubToken') && localStorage.getItem('githubRepo');
+            if (hasGitHub) {
+                output.textContent += '✅ GitHub configured\n';
+            } else {
+                output.textContent += '⚠️ GitHub NOT configured (will only save locally)\n';
+            }
+
+            const prediction = {
+                id: 'pred_test_' + Date.now(),
+                author: 'test_user',
+                username: 'test_user',
+                title: 'Test Prediction',
+                category: 'crypto',
+                language: 'it',
+                tags: [],
+                created: Date.now(),
+                revealDate: Date.now() + 86400000,
+                commitHash: 'test_hash_123',
+                encrypted: 'test_encrypted_content',
+                revealed: false,
+                revealNonce: null,
+                revealContent: null,
+                metadata: {
+                    views: 0,
+                    comments: 0,
+                    upvotes: 0,
+                    shares: 0
+                }
+            };
+
+            try {
+                output.textContent += 'Saving prediction...\n';
+                const path = await window.ClusterStorage.savePredictionToCluster(prediction);
+                output.textContent += '✅ Saved to: ' + path + '\n';
+
+                // Check localStorage
+                const saved = localStorage.getItem('prediction_' + prediction.id);
+                if (saved) {
+                    output.textContent += '✅ Found in localStorage!\n';
+                    output.textContent += JSON.stringify(JSON.parse(saved), null, 2) + '\n';
+                } else {
+                    output.textContent += '❌ NOT found in localStorage!\n';
+                }
+            } catch (error) {
+                output.textContent += '❌ Error: ' + error.message + '\n';
+                output.textContent += error.stack + '\n';
+            }
+        }
+
+        function checkStorage() {
+            output.textContent = 'Checking localStorage...\n\n';
+
+            let count = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('prediction_')) {
+                    count++;
+                    const data = JSON.parse(localStorage.getItem(key));
+                    output.textContent += `Found: ${data.id} - ${data.title}\n`;
+                }
+            }
+
+            output.textContent += `\nTotal predictions in localStorage: ${count}\n`;
+        }
+    </script>
+</body>
+</html>

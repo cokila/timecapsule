@@ -1193,34 +1193,56 @@
 
             // Save nonce locally (encrypted)
             myNonces[prediction.id] = nonce;
-            await saveEncryptedNonces();
 
-            // Auto-sync to GitHub if configured
-            const hasGitHub = localStorage.getItem('githubToken') && localStorage.getItem('githubRepo');
-            if (hasGitHub) {
-                await pushNoncesToGitHub();
+            if (!masterPassword) {
+                console.warn('⚠️ Master password not set - nonce will not be encrypted');
+                // Save unencrypted as fallback (NOT RECOMMENDED for production)
+                localStorage.setItem('nonces_unencrypted', JSON.stringify(myNonces));
+            } else {
+                await saveEncryptedNonces();
+                // Auto-sync to GitHub if configured
+                const hasGitHub = localStorage.getItem('githubToken') && localStorage.getItem('githubRepo');
+                if (hasGitHub) {
+                    try {
+                        await pushNoncesToGitHub();
+                        console.log('✅ Nonces pushed to GitHub');
+                    } catch (error) {
+                        console.error('❌ Failed to push nonces to GitHub:', error);
+                    }
+                }
             }
 
             // Save to cluster storage
             let savedPath = '';
             let pushedToGitHub = false;
+            let saveError = null;
+
             try {
+                console.log('📝 Saving prediction to cluster...', prediction);
                 savedPath = await window.ClusterStorage.savePredictionToCluster(prediction);
+                console.log('✅ Prediction saved to cluster:', savedPath);
 
                 // Update cache and indices
-                await window.ClusterStorage.updateHotCache(await window.ClusterStorage.loadAllPredictions());
-
-                console.log('Prediction saved to cluster:', prediction.id);
+                try {
+                    await window.ClusterStorage.updateHotCache(await window.ClusterStorage.loadAllPredictions());
+                    console.log('✅ Cache updated');
+                } catch (cacheError) {
+                    console.error('⚠️ Failed to update cache:', cacheError);
+                }
 
                 // Check if GitHub is configured to show appropriate message
                 const hasGitHub = localStorage.getItem('githubToken') && localStorage.getItem('githubRepo');
                 pushedToGitHub = hasGitHub;
             } catch (error) {
-                console.error('Error saving to cluster:', error);
+                console.error('❌ Error saving to cluster:', error);
+                saveError = error;
+                alert('⚠️ Errore nel salvataggio:\n' + error.message + '\n\nControlla la console (F12) per dettagli.');
             }
 
-            // Add to predictions array (for immediate UI update)
-            predictions.unshift(prediction);
+            // Add to predictions array (for immediate UI update) only if saved successfully
+            if (!saveError) {
+                predictions.unshift(prediction);
+            }
 
             // Close modal & refresh
             closeModal('modalNew');
@@ -1228,17 +1250,24 @@
             renderFeed();
             updateStats();
 
-            // Show success message
-            let message = '✅ Predizione creata e criptata!\n\n';
-            message += `📍 Salvata localmente in:\n${savedPath}\n\n`;
+            // Show success/error message
+            if (!saveError) {
+                let message = '✅ Predizione creata e criptata!\n\n';
+                message += `📍 Salvata localmente in:\n${savedPath}\n\n`;
 
-            if (pushedToGitHub) {
-                message += '🚀 Pubblicata su GitHub!\nOra tutti possono vederla.';
-            } else {
-                message += 'ℹ️ Solo locale. Configura GitHub in Settings per pubblicarla.';
+                if (pushedToGitHub) {
+                    message += '🚀 Pubblicata su GitHub!\nOra tutti possono vederla.';
+                } else {
+                    message += 'ℹ️ Solo locale. Configura GitHub in Settings per pubblicarla.';
+                }
+
+                if (!masterPassword) {
+                    message += '\n\n⚠️ Master password non configurata!\nIl nonce non è criptato.';
+                }
+
+                alert(message);
             }
-
-            alert(message);
+            // Error message already shown above
         }
         
         // Crypto functions
