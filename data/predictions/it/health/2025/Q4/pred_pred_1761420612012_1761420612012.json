@@ -1,0 +1,23 @@
+{
+  "id": "pred_1761420612012",
+  "author": "user_w3xpblgi2",
+  "username": "user_w3xpblgi2",
+  "title": "Mi sposo 2 ",
+  "category": "health",
+  "language": "it",
+  "tags": [],
+  "created": 1761420612012,
+  "revealDate": 1761609600000,
+  "commitHash": "6bdc8bc618ccfa5b3eb8e57879c9200602afa1c7d701bf66008a6e2eae5e8950",
+  "encrypted": "viBbpvHgqEyJRsW8Iet559lW2zon5il4CBdbh/tdpEQbWUEFgBA=",
+  "revealed": false,
+  "revealNonce": null,
+  "revealContent": null,
+  "metadata": {
+    "views": 0,
+    "comments": 0,
+    "upvotes": 0,
+    "shares": 0,
+    "clusterPath": "data/predictions/it/health/2025/Q4/"
+  }
+}
