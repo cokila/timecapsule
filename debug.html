@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug Time Capsule</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .success {
+            border-left-color: #10b981;
+            background: #d1fae5;
+        }
+
+        .error {
+            border-left-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .warning {
+            border-left-color: #f59e0b;
+            background: #fef3c7;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        .log {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        label {
+            font-weight: 600;
+            color: #374151;
+            display: block;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Time Capsule</h1>
+        <p style="margin-bottom: 1rem; color: #6b7280;">
+            Questa pagina ti aiuta a capire perché le predizioni non si salvano.
+        </p>
+
+        <!-- Test 1: Check Configuration -->
+        <div class="section">
+            <h3>📋 Step 1: Verifica Configurazione</h3>
+            <button onclick="checkConfig()">▶️ Controlla Config</button>
+            <div id="configResult" class="log"></div>
+        </div>
+
+        <!-- Test 2: Check Cluster Storage -->
+        <div class="section">
+            <h3>🔧 Step 2: Test Cluster Storage</h3>
+            <button onclick="testClusterStorage()">▶️ Test Storage</button>
+            <div id="storageResult" class="log"></div>
+        </div>
+
+        <!-- Test 3: Create Test Prediction -->
+        <div class="section">
+            <h3>✏️ Step 3: Crea Predizione Test</h3>
+            <label>Titolo:</label>
+            <input type="text" id="testTitle" value="Test predizione" placeholder="Titolo test">
+
+            <label>Contenuto:</label>
+            <textarea id="testContent" placeholder="Contenuto test">Questa è una predizione di test per verificare il salvataggio.</textarea>
+
+            <button onclick="createTestPrediction()">▶️ Crea Test</button>
+            <div id="createResult" class="log"></div>
+        </div>
+
+        <!-- Test 4: Check Saved Predictions -->
+        <div class="section">
+            <h3>💾 Step 4: Verifica Predizioni Salvate</h3>
+            <button onclick="checkSaved()">▶️ Controlla Salvate</button>
+            <div id="savedResult" class="log"></div>
+        </div>
+
+        <!-- Test 5: GitHub Test -->
+        <div class="section">
+            <h3>🚀 Step 5: Test GitHub</h3>
+            <button onclick="testGitHub()">▶️ Test GitHub</button>
+            <div id="githubResult" class="log"></div>
+        </div>
+    </div>
+
+    <script src="cluster-storage.js"></script>
+    <script>
+        function log(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            const section = el.closest('.section');
+
+            // Update log
+            el.textContent += message + '\n';
+
+            // Update section style
+            section.classList.remove('success', 'error', 'warning');
+            if (type === 'success') section.classList.add('success');
+            if (type === 'error') section.classList.add('error');
+            if (type === 'warning') section.classList.add('warning');
+        }
+
+        function clear(elementId) {
+            document.getElementById(elementId).textContent = '';
+        }
+
+        // Step 1: Check Configuration
+        function checkConfig() {
+            clear('configResult');
+            log('configResult', '🔍 Controllo configurazione...\n');
+
+            // Check localStorage
+            const githubToken = localStorage.getItem('githubToken');
+            const githubRepo = localStorage.getItem('githubRepo');
+            const hasEncryptedNonces = localStorage.getItem('hasEncryptedNonces');
+            const username = localStorage.getItem('username');
+
+            log('configResult', `Username: ${username || '❌ NON CONFIGURATO'}`);
+            log('configResult', `GitHub Token: ${githubToken ? '✅ Configurato' : '❌ NON configurato'}`);
+            log('configResult', `GitHub Repo: ${githubRepo || '❌ NON configurato'}`);
+            log('configResult', `Master Password: ${hasEncryptedNonces ? '✅ Configurata' : '❌ NON configurata'}`);
+
+            // Check ClusterStorage
+            if (window.ClusterStorage) {
+                log('configResult', '\n✅ ClusterStorage caricato correttamente', 'success');
+            } else {
+                log('configResult', '\n❌ ClusterStorage NON caricato!', 'error');
+                log('configResult', 'ERRORE: cluster-storage.js non è stato caricato!');
+            }
+        }
+
+        // Step 2: Test Cluster Storage
+        async function testClusterStorage() {
+            clear('storageResult');
+            log('storageResult', '🧪 Test Cluster Storage...\n');
+
+            if (!window.ClusterStorage) {
+                log('storageResult', '❌ ERRORE: ClusterStorage non disponibile!', 'error');
+                return;
+            }
+
+            try {
+                const testPred = {
+                    id: 'test_' + Date.now(),
+                    title: 'Test Storage',
+                    category: 'crypto',
+                    language: 'it',
+                    revealDate: Date.now() + 86400000,
+                    created: Date.now(),
+                    author: 'test',
+                    username: 'test',
+                    commitHash: 'test123',
+                    encrypted: 'test_encrypted',
+                    revealed: false,
+                    metadata: {}
+                };
+
+                log('storageResult', '📝 Salvataggio test...');
+                const path = await window.ClusterStorage.savePredictionToCluster(testPred);
+                log('storageResult', `✅ Salvato: ${path}`);
+
+                // Check if saved in localStorage
+                const saved = localStorage.getItem('prediction_' + testPred.id);
+                if (saved) {
+                    log('storageResult', '✅ Trovato in localStorage!', 'success');
+                    log('storageResult', '\nDati salvati:');
+                    log('storageResult', JSON.stringify(JSON.parse(saved), null, 2));
+                } else {
+                    log('storageResult', '❌ NON trovato in localStorage!', 'error');
+                }
+            } catch (error) {
+                log('storageResult', `❌ ERRORE: ${error.message}`, 'error');
+                log('storageResult', error.stack);
+            }
+        }
+
+        // Step 3: Create Test Prediction (Full Flow)
+        async function createTestPrediction() {
+            clear('createResult');
+            log('createResult', '✏️ Creazione predizione test completa...\n');
+
+            const title = document.getElementById('testTitle').value;
+            const content = document.getElementById('testContent').value;
+
+            if (!title || !content) {
+                log('createResult', '❌ Inserisci titolo e contenuto!', 'error');
+                return;
+            }
+
+            try {
+                // Generate nonce (simple version for test)
+                const nonce = Math.random().toString(36).substring(2, 15);
+                const timestamp = Date.now();
+
+                log('createResult', `📝 Creazione predizione "${title}"...`);
+                log('createResult', `🔑 Nonce generato: ${nonce.substring(0, 10)}...`);
+
+                const prediction = {
+                    id: 'pred_' + timestamp,
+                    author: localStorage.getItem('username') || 'test_user',
+                    username: localStorage.getItem('username') || 'test_user',
+                    title: title,
+                    category: 'crypto',
+                    language: 'it',
+                    tags: [],
+                    created: timestamp,
+                    revealDate: timestamp + 86400000,
+                    commitHash: 'hash_' + timestamp,
+                    encrypted: btoa(content), // Simple base64 for test
+                    revealed: false,
+                    revealNonce: null,
+                    revealContent: null,
+                    metadata: {
+                        views: 0,
+                        comments: 0,
+                        upvotes: 0,
+                        shares: 0
+                    }
+                };
+
+                log('createResult', '💾 Salvataggio...');
+                const path = await window.ClusterStorage.savePredictionToCluster(prediction);
+
+                log('createResult', `✅ SALVATA: ${path}`, 'success');
+                log('createResult', `\nID: ${prediction.id}`);
+                log('createResult', `Path: ${path}`);
+
+                // Verify
+                const saved = localStorage.getItem('prediction_' + prediction.id);
+                if (saved) {
+                    log('createResult', '\n✅ VERIFICATO in localStorage!');
+                } else {
+                    log('createResult', '\n⚠️ Warning: Non trovato in localStorage', 'warning');
+                }
+
+            } catch (error) {
+                log('createResult', `\n❌ ERRORE: ${error.message}`, 'error');
+                log('createResult', error.stack);
+            }
+        }
+
+        // Step 4: Check Saved Predictions
+        function checkSaved() {
+            clear('savedResult');
+            log('savedResult', '💾 Controllo predizioni salvate...\n');
+
+            let count = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('prediction_')) {
+                    count++;
+                    const data = JSON.parse(localStorage.getItem(key));
+                    log('savedResult', `\n${count}. ${data.title}`);
+                    log('savedResult', `   ID: ${data.id}`);
+                    log('savedResult', `   Created: ${new Date(data.created).toLocaleString()}`);
+                }
+            }
+
+            if (count === 0) {
+                log('savedResult', '❌ Nessuna predizione trovata in localStorage!', 'error');
+                log('savedResult', '\nQuesto significa che il salvataggio non funziona.');
+            } else {
+                log('savedResult', `\n✅ Trovate ${count} predizioni!`, 'success');
+            }
+        }
+
+        // Step 5: Test GitHub
+        async function testGitHub() {
+            clear('githubResult');
+            log('githubResult', '🚀 Test connessione GitHub...\n');
+
+            const token = localStorage.getItem('githubToken');
+            const repo = localStorage.getItem('githubRepo');
+
+            if (!token || !repo) {
+                log('githubResult', '❌ GitHub NON configurato!', 'error');
+                log('githubResult', '\nConfigura token e repo nelle Settings prima.');
+                return;
+            }
+
+            log('githubResult', `Repository: ${repo}`);
+            log('githubResult', `Token: ${token.substring(0, 10)}...`);
+            log('githubResult', '\n🔍 Test connessione...');
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${repo}`, {
+                    headers: { Authorization: `token ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    log('githubResult', `✅ Connessione OK!`, 'success');
+                    log('githubResult', `\nRepo: ${data.full_name}`);
+                    log('githubResult', `Private: ${data.private}`);
+                    log('githubResult', `\n✅ GitHub funziona correttamente!`);
+                } else {
+                    log('githubResult', `❌ Errore connessione: ${response.status}`, 'error');
+                    log('githubResult', '\nVerifica token e nome repository.');
+                }
+            } catch (error) {
+                log('githubResult', `❌ ERRORE: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run first check on load
+        window.addEventListener('load', () => {
+            checkConfig();
+        });
+    </script>
+</body>
+</html>
