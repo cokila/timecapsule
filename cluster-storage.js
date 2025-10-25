@@ -71,6 +71,64 @@ function getQuarter(timestamp) {
 // ==================== STORAGE OPERATIONS ====================
 
 /**
+ * Push prediction to GitHub repository
+ */
+async function pushPredictionToGitHub(prediction, fullPath) {
+    const token = localStorage.getItem('githubToken');
+    const repo = localStorage.getItem('githubRepo');
+
+    if (!token || !repo) {
+        console.log('GitHub not configured - skipping push');
+        return false;
+    }
+
+    try {
+        const filename = fullPath;
+
+        // Get current file SHA if exists (for updates)
+        let sha = null;
+        try {
+            const getResponse = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, {
+                headers: { Authorization: `token ${token}` }
+            });
+            if (getResponse.ok) {
+                const data = await getResponse.json();
+                sha = data.sha;
+            }
+        } catch (e) {
+            // File doesn't exist yet, that's ok
+        }
+
+        // Push file to GitHub
+        const predictionJSON = JSON.stringify(prediction, null, 2);
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/${filename}`, {
+            method: 'PUT',
+            headers: {
+                Authorization: `token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Add prediction: ${prediction.title}`,
+                content: btoa(unescape(encodeURIComponent(predictionJSON))), // UTF-8 safe base64
+                sha: sha
+            })
+        });
+
+        if (response.ok) {
+            console.log(`✅ Prediction pushed to GitHub: ${filename}`);
+            return true;
+        } else {
+            const errorData = await response.json();
+            console.error('GitHub API error:', errorData);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error pushing to GitHub:', error);
+        return false;
+    }
+}
+
+/**
  * Save prediction to cluster storage
  */
 async function savePredictionToCluster(prediction) {
@@ -83,12 +141,17 @@ async function savePredictionToCluster(prediction) {
         // Get full path
         const fullPath = getPredictionPath(prediction);
 
-        // In a real implementation, this would save to GitHub via API
-        // For now, we'll use localStorage as fallback
+        // Save to localStorage (always, for immediate access)
         const storageKey = `prediction_${prediction.id}`;
         localStorage.setItem(storageKey, JSON.stringify(prediction));
 
-        console.log(`Prediction saved to cluster: ${fullPath}`);
+        console.log(`Prediction saved to localStorage: ${fullPath}`);
+
+        // Auto-push to GitHub if configured
+        const pushed = await pushPredictionToGitHub(prediction, fullPath);
+        if (pushed) {
+            console.log('🚀 Prediction also pushed to GitHub!');
+        }
 
         // Update indices
         await updateClusterIndex(prediction.language, prediction.category);

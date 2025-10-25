@@ -804,17 +804,21 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">GitHub Personal Access Token (optional)</label>
+                <label class="form-label">GitHub Personal Access Token</label>
                 <input type="password" class="form-input" id="githubToken" placeholder="ghp_...">
                 <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">
-                    Per sync automatico dei nonces su GitHub.
-                    <a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank" style="color: var(--primary);">Crea token</a>
+                    <strong>🚀 Auto-Publish:</strong> Le tue predizioni verranno pubblicate automaticamente su GitHub.<br>
+                    <strong>🔐 Backup Sicuro:</strong> I nonces vengono sincronizzati criptati.<br>
+                    <a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank" style="color: var(--primary); text-decoration: underline;">→ Crea token qui</a>
                 </p>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Repository</label>
                 <input type="text" class="form-input" id="githubRepo" placeholder="username/timecapsule">
+                <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">
+                    Il repository dove pubblicare le predizioni (es: <code>cokila/timecapsule</code>)
+                </p>
             </div>
 
             <button onclick="saveGitHubSettings()" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
@@ -1193,13 +1197,19 @@
             }
 
             // Save to cluster storage
+            let savedPath = '';
+            let pushedToGitHub = false;
             try {
-                await window.ClusterStorage.savePredictionToCluster(prediction);
+                savedPath = await window.ClusterStorage.savePredictionToCluster(prediction);
 
                 // Update cache and indices
                 await window.ClusterStorage.updateHotCache(await window.ClusterStorage.loadAllPredictions());
 
                 console.log('Prediction saved to cluster:', prediction.id);
+
+                // Check if GitHub is configured to show appropriate message
+                const hasGitHub = localStorage.getItem('githubToken') && localStorage.getItem('githubRepo');
+                pushedToGitHub = hasGitHub;
             } catch (error) {
                 console.error('Error saving to cluster:', error);
             }
@@ -1213,7 +1223,17 @@
             renderFeed();
             updateStats();
 
-            alert('✅ Predizione creata e criptata!\n\nSalvata in: ' + window.ClusterStorage.getClusterPath(prediction));
+            // Show success message
+            let message = '✅ Predizione creata e criptata!\n\n';
+            message += `📍 Salvata localmente in:\n${savedPath}\n\n`;
+
+            if (pushedToGitHub) {
+                message += '🚀 Pubblicata su GitHub!\nOra tutti possono vederla.';
+            } else {
+                message += 'ℹ️ Solo locale. Configura GitHub in Settings per pubblicarla.';
+            }
+
+            alert(message);
         }
         
         // Crypto functions
