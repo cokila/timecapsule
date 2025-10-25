@@ -965,11 +965,16 @@
         
         // Load predictions from Cluster Storage
         async function loadPredictions() {
+            const feedContent = document.getElementById('feedContent');
+
             try {
-                // Load from cluster storage (localStorage for now, GitHub in production)
+                // Show loading indicator
+                feedContent.innerHTML = '<div class="loading">📡 Caricamento predizioni da GitHub...</div>';
+
+                // Load from cluster storage (GitHub → cache → localStorage)
                 predictions = await window.ClusterStorage.loadAllPredictions();
 
-                console.log(`✅ Loaded ${predictions.length} predictions from localStorage`);
+                console.log(`✅ Loaded ${predictions.length} predictions`);
 
                 // ONLY use example data on very first load (check localStorage flag)
                 if (predictions.length === 0) {

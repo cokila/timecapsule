@@ -165,6 +165,81 @@ async function savePredictionToCluster(prediction) {
 }
 
 /**
+ * Load all predictions from GitHub repository
+ */
+async function loadAllPredictionsFromGitHub() {
+    const token = localStorage.getItem('githubToken');
+    const repo = localStorage.getItem('githubRepo');
+
+    if (!token || !repo) {
+        console.log('GitHub not configured - skipping remote load');
+        return [];
+    }
+
+    try {
+        console.log('📡 Loading predictions from GitHub...');
+
+        // Use GitHub Tree API to get all files recursively
+        const response = await fetch(`https://api.github.com/repos/${repo}/git/trees/main?recursive=1`, {
+            headers: { Authorization: `token ${token}` }
+        });
+
+        if (!response.ok) {
+            throw new Error(`GitHub API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const tree = data.tree || [];
+
+        // Filter prediction files (data/predictions/**/pred_*.json)
+        const predictionFiles = tree.filter(item =>
+            item.path.startsWith('data/predictions/') &&
+            item.path.includes('/pred_') &&
+            item.path.endsWith('.json') &&
+            item.type === 'blob'
+        );
+
+        console.log(`Found ${predictionFiles.length} prediction files on GitHub`);
+
+        // Download all predictions in parallel
+        const predictions = await Promise.all(
+            predictionFiles.map(async (file) => {
+                try {
+                    const fileResponse = await fetch(`https://api.github.com/repos/${repo}/contents/${file.path}`, {
+                        headers: { Authorization: `token ${token}` }
+                    });
+
+                    if (!fileResponse.ok) return null;
+
+                    const fileData = await fileResponse.json();
+                    const content = decodeURIComponent(escape(atob(fileData.content)));
+                    return JSON.parse(content);
+                } catch (e) {
+                    console.error(`Error loading ${file.path}:`, e);
+                    return null;
+                }
+            })
+        );
+
+        // Filter out nulls and save to localStorage for cache
+        const validPredictions = predictions.filter(p => p !== null);
+
+        // Cache in localStorage
+        validPredictions.forEach(pred => {
+            const storageKey = `prediction_${pred.id}`;
+            localStorage.setItem(storageKey, JSON.stringify(pred));
+        });
+
+        console.log(`✅ Loaded ${validPredictions.length} predictions from GitHub`);
+        return validPredictions;
+
+    } catch (error) {
+        console.error('Error loading from GitHub:', error);
+        return [];
+    }
+}
+
+/**
  * Load prediction from cluster storage
  */
 async function loadPredictionFromCluster(predictionId) {
@@ -222,17 +297,36 @@ async function loadPredictionsFromCluster(language, category, year = null, quart
 }
 
 /**
- * Load all predictions (from cache or scan all clusters)
+ * Load all predictions (from GitHub, cache, or localStorage)
  */
 async function loadAllPredictions() {
     try {
-        // Try to load from hot cache first
+        // Check if we should load from GitHub
+        const hasGitHub = localStorage.getItem('githubToken') && localStorage.getItem('githubRepo');
+
+        if (hasGitHub) {
+            // Try to load from GitHub first
+            const githubPredictions = await loadAllPredictionsFromGitHub();
+
+            if (githubPredictions.length > 0) {
+                // Sort by created date (newest first)
+                githubPredictions.sort((a, b) => b.created - a.created);
+
+                // Update hot cache
+                await updateHotCache(githubPredictions);
+
+                return githubPredictions;
+            }
+        }
+
+        // Fallback 1: Try to load from hot cache
         const cached = await loadFromCache('hot');
-        if (cached && cached.predictions) {
+        if (cached && cached.predictions && cached.predictions.length > 0) {
+            console.log(`📦 Loaded ${cached.predictions.length} predictions from cache`);
             return cached.predictions;
         }
 
-        // Fallback: scan all predictions in localStorage
+        // Fallback 2: scan all predictions in localStorage
         const predictions = [];
 
         for (let i = 0; i < localStorage.length; i++) {
@@ -246,6 +340,7 @@ async function loadAllPredictions() {
         // Sort by created date (newest first)
         predictions.sort((a, b) => b.created - a.created);
 
+        console.log(`💾 Loaded ${predictions.length} predictions from localStorage`);
         return predictions;
     } catch (error) {
         console.error('Error loading all predictions:', error);
