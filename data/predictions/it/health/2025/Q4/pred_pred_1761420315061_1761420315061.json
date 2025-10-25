@@ -1,0 +1,23 @@
+{
+  "id": "pred_1761420315061",
+  "author": "user_w3xpblgi2",
+  "username": "user_w3xpblgi2",
+  "title": "Mi sposo ?",
+  "category": "health",
+  "language": "it",
+  "tags": [],
+  "created": 1761420315061,
+  "revealDate": 1761523200000,
+  "commitHash": "4e766ab17015d7941c3108c69b8ba8c146e138ab8bdcb5063c9bef831085de7e",
+  "encrypted": "WWhe7kaKJidIfb515Dp3rffb/u4sLfHNkFxmb/s562Qsdup5",
+  "revealed": false,
+  "revealNonce": null,
+  "revealContent": null,
+  "metadata": {
+    "views": 0,
+    "comments": 0,
+    "upvotes": 0,
+    "shares": 0,
+    "clusterPath": "data/predictions/it/health/2025/Q4/"
+  }
+}
