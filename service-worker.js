@@ -1,8 +1,9 @@
-const CACHE_NAME = 'timecapsule-v1';
+const CACHE_NAME = 'timecapsule-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  '/timecapsule/',
+  '/timecapsule/index.html',
+  '/timecapsule/manifest.json',
+  '/timecapsule/cluster-storage.js'
 ];
 
 // Install service worker

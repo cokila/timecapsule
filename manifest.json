@@ -2,11 +2,12 @@
   "name": "Time Capsule",
   "short_name": "TimeCapsule",
   "description": "Le tue predizioni, criptate e permanenti",
-  "start_url": "/",
+  "start_url": "/timecapsule/",
   "display": "standalone",
   "background_color": "#667eea",
   "theme_color": "#667eea",
   "orientation": "portrait-primary",
+  "scope": "/timecapsule/",
   "icons": [
     {
       "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏰</text></svg>",
@@ -27,7 +28,7 @@
       "name": "Nuova Predizione",
       "short_name": "Nuova",
       "description": "Crea una nuova predizione",
-      "url": "/?action=new",
+      "url": "/timecapsule/?action=new",
       "icons": [
         {
           "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✏️</text></svg>",
@@ -39,7 +40,7 @@
       "name": "Le Mie Predizioni",
       "short_name": "Mie",
       "description": "Vedi le tue predizioni",
-      "url": "/?action=mine",
+      "url": "/timecapsule/?action=mine",
       "icons": [
         {
           "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>",
