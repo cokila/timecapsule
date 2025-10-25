@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Feed - Time Capsule</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        .result {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix Feed</h1>
+
+        <button onclick="clearCache()">1. Pulisci Cache</button>
+        <button onclick="reloadPredictions()">2. Ricarica Predizioni</button>
+        <button onclick="checkStatus()">3. Verifica Status</button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function log(msg) {
+            document.getElementById('result').textContent += msg + '\n';
+        }
+
+        function clear() {
+            document.getElementById('result').textContent = '';
+        }
+
+        function clearCache() {
+            clear();
+            log('🧹 Pulizia cache...\n');
+
+            // Clear hot cache
+            localStorage.removeItem('cache_hot');
+            log('✅ Cache hot rimossa');
+
+            // Clear all other caches
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('cache_')) {
+                    localStorage.removeItem(key);
+                    log(`✅ Rimosso: ${key}`);
+                }
+            }
+
+            log('\n✅ Cache pulita!');
+            log('\n👉 Ora clicca "2. Ricarica Predizioni"');
+        }
+
+        function reloadPredictions() {
+            clear();
+            log('🔄 Ricarica predizioni da localStorage...\n');
+
+            const predictions = [];
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('prediction_')) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        predictions.push(data);
+                        log(`✅ Caricata: ${data.title} (${data.id})`);
+                    } catch (e) {
+                        log(`❌ Errore parsing ${key}: ${e.message}`);
+                    }
+                }
+            }
+
+            log(`\n📊 Totale: ${predictions.length} predizioni`);
+
+            if (predictions.length > 0) {
+                log('\n✅ PREDIZIONI CARICATE CORRETTAMENTE!');
+                log('\n👉 Ora vai su https://cokila.github.io/timecapsule');
+                log('👉 E ricarica la pagina (F5 o swipe down)');
+                log('👉 Dovresti vedere le predizioni!');
+            } else {
+                log('\n❌ Nessuna predizione trovata!');
+            }
+        }
+
+        function checkStatus() {
+            clear();
+            log('📊 Status Sistema:\n');
+
+            // Count predictions
+            let predCount = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('prediction_')) predCount++;
+            }
+            log(`Predizioni salvate: ${predCount}`);
+
+            // Check cache
+            const hotCache = localStorage.getItem('cache_hot');
+            if (hotCache) {
+                try {
+                    const cache = JSON.parse(hotCache);
+                    log(`Cache hot: ${cache.predictions ? cache.predictions.length : 0} predizioni`);
+                } catch (e) {
+                    log('Cache hot: Corrotta!');
+                }
+            } else {
+                log('Cache hot: Vuota');
+            }
+
+            // Check GitHub config
+            const hasGitHub = localStorage.getItem('githubToken') && localStorage.getItem('githubRepo');
+            log(`GitHub configurato: ${hasGitHub ? 'Sì' : 'No'}`);
+
+            log('\n---');
+            if (predCount > 0) {
+                log('✅ Hai predizioni salvate!');
+                log('\n💡 Se non le vedi nell\'app:');
+                log('1. Clicca "1. Pulisci Cache"');
+                log('2. Clicca "2. Ricarica Predizioni"');
+                log('3. Ricarica l\'app principale');
+            }
+        }
+
+        // Auto-check on load
+        checkStatus();
+    </script>
+</body>
+</html>

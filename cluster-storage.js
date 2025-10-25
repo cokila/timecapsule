@@ -324,6 +324,8 @@ async function loadAllPredictions() {
         if (cached && cached.predictions && cached.predictions.length > 0) {
             console.log(`📦 Loaded ${cached.predictions.length} predictions from cache`);
             return cached.predictions;
+        } else if (cached && cached.predictions && cached.predictions.length === 0) {
+            console.log('⚠️ Cache exists but is empty - skipping to localStorage scan');
         }
 
         // Fallback 2: scan all predictions in localStorage
