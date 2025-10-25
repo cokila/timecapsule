@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": 1729785600000,
+  "totalPredictions": 0,
+  "byLanguage": {
+    "it": 0,
+    "en": 0,
+    "es": 0,
+    "fr": 0,
+    "de": 0
+  },
+  "byCategory": {
+    "crypto": 0,
+    "ai": 0,
+    "politics": 0,
+    "tech": 0,
+    "sports": 0,
+    "economy": 0,
+    "science": 0
+  },
+  "byYear": {
+    "2025": 0,
+    "2026": 0,
+    "2027": 0
+  },
+  "clusters": [],
+  "metadata": {
+    "totalSize": "0KB",
+    "maxSize": "100MB",
+    "usagePercent": 0
+  }
+}

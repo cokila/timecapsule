@@ -283,10 +283,15 @@
             background: #d1fae5;
             color: var(--success);
         }
-        
+
         .result-wrong {
             background: #fee2e2;
             color: var(--danger);
+        }
+
+        .result-partial {
+            background: #fef3c7;
+            color: var(--warning);
         }
         
         .prediction-meta {
@@ -301,7 +306,194 @@
             align-items: center;
             gap: 0.25rem;
         }
-        
+
+        /* Revealable Cards */
+        .revealable-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 150ms;
+        }
+
+        .revealable-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .revealable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .revealable-info {
+            flex: 1;
+        }
+
+        .revealable-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .revealable-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .revealable-date {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .revealable-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-reveal {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 150ms;
+        }
+
+        .btn-reveal:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-preview {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 150ms;
+        }
+
+        .btn-preview:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6b7280;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* My Predictions Cards */
+        .mypred-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 150ms;
+            position: relative;
+        }
+
+        .mypred-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .mypred-card.revealed {
+            border-left: 4px solid var(--success);
+            background: linear-gradient(90deg, #d1fae5 0%, white 10%);
+        }
+
+        .mypred-card.revealable {
+            border-left: 4px solid #3b82f6;
+            background: linear-gradient(90deg, #dbeafe 0%, white 10%);
+        }
+
+        .mypred-card.active {
+            border-left: 4px solid #6b7280;
+        }
+
+        .mypred-status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .mypred-status-badge.revealed {
+            background: #d1fae5;
+            color: var(--success);
+        }
+
+        .mypred-status-badge.revealable {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+
+        .mypred-status-badge.active {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .mypred-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            padding-right: 8rem;
+        }
+
+        .mypred-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .mypred-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .mypred-stat-box {
+            background: var(--light);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .mypred-stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .mypred-stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
         /* Modal */
         .modal {
             display: none;
@@ -489,18 +681,34 @@
             
             <form id="formNew" onsubmit="createPrediction(event)">
                 <div class="form-group">
+                    <label class="form-label">Lingua</label>
+                    <select class="form-select" id="language" required>
+                        <option value="it" selected>🇮🇹 Italiano</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="de">🇩🇪 Deutsch</option>
+                        <option value="pt">🇵🇹 Português</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Categoria</label>
                     <select class="form-select" id="category" required>
                         <option value="">Seleziona...</option>
                         <option value="crypto">💰 Crypto</option>
-                        <option value="sport">⚽ Sport</option>
+                        <option value="ai">🤖 AI</option>
+                        <option value="sports">⚽ Sports</option>
                         <option value="politics">🗳️ Politics</option>
-                        <option value="tech">🔬 Tech</option>
-                        <option value="personal">👤 Personal</option>
-                        <option value="other">🌍 Altro</option>
+                        <option value="tech">💻 Tech</option>
+                        <option value="economy">📈 Economy</option>
+                        <option value="science">🔬 Science</option>
+                        <option value="health">🏥 Health</option>
+                        <option value="climate">🌍 Climate</option>
+                        <option value="space">🚀 Space</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Titolo</label>
                     <input type="text" class="form-input" id="title" placeholder="Bitcoin raggiungerà $150K" maxlength="100" required>
@@ -646,8 +854,69 @@
         </div>
     </div>
 
+    <!-- Modal Revealable Predictions -->
+    <div class="modal" id="modalRevealable">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <div class="modal-title">🔓 Predizioni da Rivelare</div>
+                <button class="modal-close" onclick="closeModal('modalRevealable')">✕</button>
+            </div>
+
+            <div id="debugBanner" style="display: none; background: #fef3c7; color: #92400e; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
+                <strong>🧪 MODALITÀ DEBUG ATTIVA</strong><br>
+                Vengono mostrate <strong>tutte</strong> le tue predizioni, anche quelle con reveal date futura.<br>
+                Le predizioni future sono evidenziate in arancione.
+            </div>
+
+            <p style="margin-bottom: 1.5rem; color: #6b7280;">
+                Le tue predizioni il cui reveal date è passato. Clicca per rivelare pubblicamente.
+            </p>
+
+            <div id="revealableList" style="display: flex; flex-direction: column; gap: 1rem; max-height: 500px; overflow-y: auto;">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal My Predictions -->
+    <div class="modal" id="modalMyPredictions">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <div class="modal-title">📋 Le Mie Predizioni</div>
+                <button class="modal-close" onclick="closeModal('modalMyPredictions')">✕</button>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                <select id="myPredFilter" onchange="filterMyPredictions()" style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border); flex: 1; min-width: 150px;">
+                    <option value="all">Tutte</option>
+                    <option value="active">⏰ Attive</option>
+                    <option value="revealable">🔓 Revealable</option>
+                    <option value="revealed">✅ Rivelate</option>
+                </select>
+
+                <select id="myPredSort" onchange="filterMyPredictions()" style="padding: 0.5rem; border-radius: 0.5rem; border: 1px solid var(--border); flex: 1; min-width: 150px;">
+                    <option value="newest">Più recenti</option>
+                    <option value="oldest">Più vecchie</option>
+                    <option value="reveal-soon">Reveal più vicino</option>
+                    <option value="reveal-far">Reveal più lontano</option>
+                </select>
+            </div>
+
+            <div id="myPredStats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+
+            <div id="myPredictionsList" style="display: flex; flex-direction: column; gap: 1rem; max-height: 500px; overflow-y: auto;">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden file input for import -->
     <input type="file" id="importFileInput" style="display: none;" accept=".enc" onchange="handleImportFile(event)">
+
+    <!-- Cluster Storage System -->
+    <script src="cluster-storage.js"></script>
 
     <script>
         // Global state
@@ -655,6 +924,9 @@
         let myNonces = {}; // Will be loaded encrypted
         let masterPassword = null; // In-memory only
         let myUsername = localStorage.getItem('username') || 'user_' + Math.random().toString(36).substr(2, 9);
+
+        // 🧪 DEBUG MODE: Set to true to show ALL predictions in "Da Rivelare" (ignore reveal date)
+        const DEBUG_REVEAL_MODE = true; // ← Cambia a false per produzione
         
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
@@ -687,15 +959,35 @@
             document.getElementById('revealDate').min = tomorrow.toISOString().split('T')[0];
         });
         
-        // Load predictions from GitHub
+        // Load predictions from Cluster Storage
         async function loadPredictions() {
             try {
-                // In produzione, questo caricherà da GitHub
-                // Per ora, usiamo dati di esempio
-                predictions = getExamplePredictions();
+                // Load from cluster storage (localStorage for now, GitHub in production)
+                predictions = await window.ClusterStorage.loadAllPredictions();
+
+                console.log(`✅ Loaded ${predictions.length} predictions from localStorage`);
+
+                // ONLY use example data on very first load (check localStorage flag)
+                if (predictions.length === 0) {
+                    const hasLoadedBefore = localStorage.getItem('hasLoadedBefore');
+
+                    if (!hasLoadedBefore) {
+                        // First time user - show examples
+                        predictions = getExamplePredictions();
+                        localStorage.setItem('hasLoadedBefore', 'true');
+                        console.log('First load: using example data');
+                    } else {
+                        // User has used app before, just no predictions yet
+                        console.log('No predictions saved yet');
+                    }
+                }
+
+                // Update hot cache
+                await window.ClusterStorage.updateHotCache(predictions);
             } catch (error) {
                 console.error('Error loading predictions:', error);
-                predictions = getExamplePredictions();
+                // Only use examples as last resort
+                predictions = [];
             }
         }
         
@@ -705,25 +997,49 @@
                 {
                     id: 'pred_001',
                     author: 'crypto_master',
+                    username: 'crypto_master',
                     title: 'Bitcoin nel 2026',
                     category: 'crypto',
+                    language: 'it',
+                    tags: ['bitcoin', 'price'],
                     created: Date.now() - 86400000,
                     revealDate: Date.now() + 86400000 * 365,
+                    commitHash: 'sha256_example_hash_1',
                     encrypted: 'U2FsdGVkX1...',
                     revealed: false,
-                    views: 1234
+                    revealNonce: null,
+                    revealContent: null,
+                    metadata: {
+                        views: 1234,
+                        comments: 5,
+                        upvotes: 42,
+                        shares: 3,
+                        clusterPath: 'data/predictions/it/crypto/2026/Q1/'
+                    }
                 },
                 {
                     id: 'pred_002',
                     author: 'oracle_pro',
+                    username: 'oracle_pro',
                     title: 'Super Bowl 2025',
-                    category: 'sport',
+                    category: 'sports',
+                    language: 'en',
+                    tags: ['nfl', 'superbowl'],
                     created: Date.now() - 86400000 * 30,
                     revealDate: Date.now() - 86400000,
+                    commitHash: 'sha256_example_hash_2',
                     revealed: true,
                     plaintext: 'Kansas City Chiefs vincerà Super Bowl 2025 contro Philadelphia Eagles 24-21',
                     result: 'correct',
-                    views: 5678
+                    revealNonce: 'revealed_nonce_example',
+                    revealContent: 'Kansas City Chiefs vincerà Super Bowl 2025 contro Philadelphia Eagles 24-21',
+                    metadata: {
+                        views: 5678,
+                        comments: 102,
+                        upvotes: 234,
+                        shares: 56,
+                        clusterPath: 'data/predictions/en/sports/2025/Q1/'
+                    }
                 }
             ];
         }
@@ -748,16 +1064,29 @@
             
             let contentHTML;
             if (isRevealed) {
-                const resultClass = p.result === 'correct' ? 'result-correct' : 'result-wrong';
-                const resultText = p.result === 'correct' ? '✅ CORRETTA!' : '❌ SBAGLIATA';
+                let resultClass, resultText;
+                if (p.result === 'correct') {
+                    resultClass = 'result-correct';
+                    resultText = '✅ CORRETTA!';
+                } else if (p.result === 'wrong') {
+                    resultClass = 'result-wrong';
+                    resultText = '❌ SBAGLIATA';
+                } else if (p.result === 'partial') {
+                    resultClass = 'result-partial';
+                    resultText = '⚠️ PARZIALE';
+                } else {
+                    resultClass = '';
+                    resultText = '';
+                }
+
                 contentHTML = `
                     <div class="prediction-content">
                         <div class="revealed-content">
                             <strong>📝 PREDIZIONE ORIGINALE:</strong><br>
                             ${p.plaintext}
-                            <div class="result-badge ${resultClass}">
+                            ${resultText ? `<div class="result-badge ${resultClass}">
                                 ${resultText}
-                            </div>
+                            </div>` : ''}
                         </div>
                     </div>
                 `;
@@ -812,12 +1141,13 @@
         // Create new prediction
         async function createPrediction(event) {
             event.preventDefault();
-            
+
             const category = document.getElementById('category').value;
             const title = document.getElementById('title').value;
             const content = document.getElementById('content').value;
             const revealDate = new Date(document.getElementById('revealDate').value).getTime();
-            
+            const language = document.getElementById('language')?.value || 'it'; // Default to Italian
+
             // Generate nonce
             const nonce = generateNonce();
             const timestamp = Date.now();
@@ -832,16 +1162,26 @@
             const prediction = {
                 id: 'pred_' + timestamp,
                 author: myUsername,
+                username: myUsername,
                 title: title,
                 category: category,
+                language: language,
+                tags: [], // Can be extracted from content later
                 created: timestamp,
                 revealDate: revealDate,
                 commitHash: commitHash,
                 encrypted: encrypted,
                 revealed: false,
-                views: 0
+                revealNonce: null,
+                revealContent: null,
+                metadata: {
+                    views: 0,
+                    comments: 0,
+                    upvotes: 0,
+                    shares: 0
+                }
             };
-            
+
             // Save nonce locally (encrypted)
             myNonces[prediction.id] = nonce;
             await saveEncryptedNonces();
@@ -851,17 +1191,29 @@
             if (hasGitHub) {
                 await pushNoncesToGitHub();
             }
-            
-            // Add to predictions
+
+            // Save to cluster storage
+            try {
+                await window.ClusterStorage.savePredictionToCluster(prediction);
+
+                // Update cache and indices
+                await window.ClusterStorage.updateHotCache(await window.ClusterStorage.loadAllPredictions());
+
+                console.log('Prediction saved to cluster:', prediction.id);
+            } catch (error) {
+                console.error('Error saving to cluster:', error);
+            }
+
+            // Add to predictions array (for immediate UI update)
             predictions.unshift(prediction);
-            
+
             // Close modal & refresh
             closeModal('modalNew');
             document.getElementById('formNew').reset();
             renderFeed();
             updateStats();
-            
-            alert('✅ Predizione creata e criptata!');
+
+            alert('✅ Predizione creata e criptata!\n\nSalvata in: ' + window.ClusterStorage.getClusterPath(prediction));
         }
         
         // Crypto functions
@@ -1100,7 +1452,14 @@
 
             // If already revealed publicly
             if (pred.revealed && pred.plaintext) {
-                const resultText = pred.result === 'correct' ? '✅ CORRETTA' : pred.result === 'wrong' ? '❌ SBAGLIATA' : '';
+                let resultText = '';
+                if (pred.result === 'correct') {
+                    resultText = '✅ CORRETTA';
+                } else if (pred.result === 'wrong') {
+                    resultText = '❌ SBAGLIATA';
+                } else if (pred.result === 'partial') {
+                    resultText = '⚠️ PARZIALE';
+                }
                 alert(`📝 ${pred.title}\n\n${pred.plaintext}\n\n${resultText}`);
                 return;
             }
@@ -1139,11 +1498,370 @@
         }
         
         function showMyPredictions() {
-            alert('Feature in sviluppo: Le mie predizioni');
+            filterMyPredictions(); // Will render with current filter/sort
+            document.getElementById('modalMyPredictions').classList.add('active');
+        }
+
+        // Get all user's predictions
+        function getMyPredictions() {
+            return predictions.filter(p => p.author === myUsername);
+        }
+
+        // Get prediction status
+        function getPredictionStatus(pred) {
+            if (pred.revealed) return 'revealed';
+
+            const now = Date.now();
+            if (pred.revealDate <= now && myNonces[pred.id]) {
+                return 'revealable';
+            }
+
+            return 'active';
+        }
+
+        // Filter and render my predictions
+        function filterMyPredictions() {
+            const filterValue = document.getElementById('myPredFilter')?.value || 'all';
+            const sortValue = document.getElementById('myPredSort')?.value || 'newest';
+
+            let myPreds = getMyPredictions();
+
+            // Apply filter
+            if (filterValue !== 'all') {
+                myPreds = myPreds.filter(p => getPredictionStatus(p) === filterValue);
+            }
+
+            // Apply sort
+            switch (sortValue) {
+                case 'newest':
+                    myPreds.sort((a, b) => b.created - a.created);
+                    break;
+                case 'oldest':
+                    myPreds.sort((a, b) => a.created - b.created);
+                    break;
+                case 'reveal-soon':
+                    myPreds.sort((a, b) => a.revealDate - b.revealDate);
+                    break;
+                case 'reveal-far':
+                    myPreds.sort((a, b) => b.revealDate - a.revealDate);
+                    break;
+            }
+
+            // Render stats
+            renderMyPredStats(getMyPredictions());
+
+            // Render list
+            renderMyPredictionsList(myPreds);
+        }
+
+        // Render stats boxes
+        function renderMyPredStats(myPreds) {
+            const container = document.getElementById('myPredStats');
+            if (!container) return;
+
+            const total = myPreds.length;
+            const revealed = myPreds.filter(p => p.revealed).length;
+            const revealable = myPreds.filter(p => getPredictionStatus(p) === 'revealable').length;
+            const active = myPreds.filter(p => getPredictionStatus(p) === 'active').length;
+
+            container.innerHTML = `
+                <div class="mypred-stat-box">
+                    <div class="mypred-stat-number">${total}</div>
+                    <div class="mypred-stat-label">Totali</div>
+                </div>
+                <div class="mypred-stat-box">
+                    <div class="mypred-stat-number" style="color: #6b7280;">⏰ ${active}</div>
+                    <div class="mypred-stat-label">Attive</div>
+                </div>
+                <div class="mypred-stat-box">
+                    <div class="mypred-stat-number" style="color: #3b82f6;">🔓 ${revealable}</div>
+                    <div class="mypred-stat-label">Revealable</div>
+                </div>
+                <div class="mypred-stat-box">
+                    <div class="mypred-stat-number" style="color: var(--success);">✅ ${revealed}</div>
+                    <div class="mypred-stat-label">Rivelate</div>
+                </div>
+            `;
+        }
+
+        // Render my predictions list
+        function renderMyPredictionsList(myPreds) {
+            const container = document.getElementById('myPredictionsList');
+            if (!container) return;
+
+            if (myPreds.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <div><strong>Nessuna predizione trovata</strong></div>
+                        <div style="margin-top: 0.5rem;">
+                            Cambia i filtri o crea una nuova predizione!
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = myPreds.map(p => {
+                const status = getPredictionStatus(p);
+                const now = Date.now();
+                const createdDate = new Date(p.created).toLocaleDateString();
+                const revealDate = new Date(p.revealDate).toLocaleDateString();
+
+                let statusBadge, statusClass, timeInfo;
+
+                if (status === 'revealed') {
+                    statusBadge = '✅ Rivelata';
+                    statusClass = 'revealed';
+                    const daysSince = Math.floor((now - p.revealDate) / 86400000);
+                    timeInfo = `Rivelata ${daysSince > 0 ? daysSince + ' giorni fa' : 'oggi'}`;
+                } else if (status === 'revealable') {
+                    statusBadge = '🔓 Revealable';
+                    statusClass = 'revealable';
+                    const daysSince = Math.floor((now - p.revealDate) / 86400000);
+                    timeInfo = `Revealable da ${daysSince} giorni`;
+                } else {
+                    statusBadge = '⏰ Attiva';
+                    statusClass = 'active';
+                    const daysLeft = Math.ceil((p.revealDate - now) / 86400000);
+                    timeInfo = `Reveal tra ${daysLeft} giorni`;
+                }
+
+                // Action buttons based on status
+                let actions = '';
+                if (status === 'revealed') {
+                    actions = `<button class="btn btn-secondary" onclick="viewPrediction('${p.id}')">👁️ Visualizza</button>`;
+                } else if (status === 'revealable') {
+                    actions = `
+                        <button class="btn btn-secondary" onclick="previewPrediction('${p.id}')">👁️ Anteprima</button>
+                        <button class="btn btn-primary" style="background: linear-gradient(135deg, var(--success), #059669);" onclick="revealPrediction('${p.id}')">🔓 Rivela</button>
+                    `;
+                } else {
+                    actions = `<button class="btn btn-secondary" onclick="previewPrediction('${p.id}')">👁️ Anteprima</button>`;
+                }
+
+                return `
+                    <div class="mypred-card ${statusClass}">
+                        <div class="mypred-status-badge ${statusClass}">${statusBadge}</div>
+
+                        <div class="mypred-title">${p.title}</div>
+
+                        <div class="mypred-meta-grid">
+                            <div>${getCategoryIcon(p.category)} ${p.category}</div>
+                            <div>🌍 ${p.language ? p.language.toUpperCase() : 'IT'}</div>
+                            <div>📅 Creata: ${createdDate}</div>
+                            <div>⏰ Reveal: ${revealDate}</div>
+                            <div style="color: ${status === 'revealed' ? 'var(--success)' : status === 'revealable' ? '#3b82f6' : '#6b7280'}; font-weight: 600;">
+                                ${timeInfo}
+                            </div>
+                        </div>
+
+                        <div class="mypred-actions">
+                            ${actions}
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
         
         function showRevealable() {
-            alert('Feature in sviluppo: Predizioni da rivelare');
+            const revealable = getRevealablePredictions();
+            renderRevealableList(revealable);
+
+            // Show debug banner if in debug mode
+            const debugBanner = document.getElementById('debugBanner');
+            if (DEBUG_REVEAL_MODE) {
+                debugBanner.style.display = 'block';
+            } else {
+                debugBanner.style.display = 'none';
+            }
+
+            document.getElementById('modalRevealable').classList.add('active');
+        }
+
+        // Get predictions that can be revealed (reveal date passed, not yet revealed, user is author)
+        function getRevealablePredictions() {
+            const now = Date.now();
+            return predictions.filter(p => {
+                // Must be author
+                if (p.author !== myUsername) return false;
+                // Must have nonce
+                if (!myNonces[p.id]) return false;
+                // Must not be revealed yet
+                if (p.revealed) return false;
+                // 🧪 DEBUG MODE: Skip reveal date check
+                if (!DEBUG_REVEAL_MODE) {
+                    // Reveal date must have passed (production mode)
+                    if (p.revealDate > now) return false;
+                }
+                return true;
+            });
+        }
+
+        // Render list of revealable predictions
+        function renderRevealableList(revealable) {
+            const container = document.getElementById('revealableList');
+
+            if (revealable.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔒</div>
+                        <div><strong>Nessuna predizione da rivelare</strong></div>
+                        <div style="margin-top: 0.5rem;">Le tue predizioni appariranno qui dopo la reveal date.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = revealable.map(p => {
+                const now = Date.now();
+                const daysPassed = Math.floor((now - p.revealDate) / 86400000);
+                const createdDate = new Date(p.created).toLocaleDateString();
+                const revealDate = new Date(p.revealDate).toLocaleDateString();
+
+                // Check if reveal date is in the future (debug mode)
+                const isFuture = p.revealDate > now;
+                const daysRemaining = isFuture ? Math.ceil((p.revealDate - now) / 86400000) : 0;
+
+                let dateLabel;
+                if (isFuture) {
+                    dateLabel = `<span style="color: #f59e0b;">🧪 DEBUG MODE: Reveal tra ${daysRemaining} giorni (${revealDate})</span>`;
+                } else {
+                    dateLabel = `<span class="revealable-date">✅ Revealable da ${daysPassed} giorni (${revealDate})</span>`;
+                }
+
+                return `
+                    <div class="revealable-card" style="${isFuture ? 'border-color: #f59e0b;' : ''}">
+                        <div class="revealable-header">
+                            <div class="revealable-info">
+                                <div class="revealable-title">${isFuture ? '🧪 ' : ''}${p.title}</div>
+                                <div class="revealable-meta">
+                                    <span>${getCategoryIcon(p.category)} ${p.category}</span>
+                                    <span>📅 Creata: ${createdDate}</span>
+                                    ${dateLabel}
+                                </div>
+                            </div>
+                            <div class="revealable-actions">
+                                <button class="btn-preview" onclick="previewPrediction('${p.id}')">
+                                    👁️ Anteprima
+                                </button>
+                                <button class="btn-reveal" onclick="revealPrediction('${p.id}')" ${isFuture ? 'style="background: linear-gradient(135deg, #f59e0b, #d97706);"' : ''}>
+                                    🔓 Rivela${isFuture ? ' (Debug)' : ' Pubblicamente'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Preview prediction content before revealing
+        async function previewPrediction(id) {
+            const pred = predictions.find(p => p.id === id);
+            if (!pred) return;
+
+            const nonce = myNonces[id];
+            if (!nonce) {
+                alert('❌ Nonce non trovato!');
+                return;
+            }
+
+            try {
+                const decrypted = await decryptContent(pred.encrypted, nonce);
+
+                // Verify commitment hash
+                const isValid = await verifyCommitment(
+                    decrypted,
+                    nonce,
+                    pred.author,
+                    pred.created,
+                    pred.commitHash
+                );
+
+                if (!isValid) {
+                    alert('⚠️ ATTENZIONE: Verifica hash fallita!\n\nLa predizione potrebbe essere stata manomessa.');
+                    return;
+                }
+
+                const revealDate = new Date(pred.revealDate).toLocaleDateString();
+                alert(`👁️ ANTEPRIMA\n\n📝 ${pred.title}\n\n${decrypted}\n\n✅ Hash verificato\n📅 Reveal date: ${revealDate}\n\n⚠️ Questa è solo un'anteprima. Clicca "Rivela Pubblicamente" per rendere visibile a tutti.`);
+            } catch (error) {
+                alert('❌ Errore decriptazione: ' + error.message);
+            }
+        }
+
+        // Reveal prediction publicly
+        async function revealPrediction(id) {
+            const pred = predictions.find(p => p.id === id);
+            if (!pred) return;
+
+            const nonce = myNonces[id];
+            if (!nonce) {
+                alert('❌ Nonce non trovato!');
+                return;
+            }
+
+            // Confirm action
+            const confirmed = confirm(`🔓 Rivelare pubblicamente?\n\n"${pred.title}"\n\nQuesta azione renderà visibile il contenuto della predizione a tutti gli utenti.\n\nContinuare?`);
+            if (!confirmed) return;
+
+            try {
+                // Decrypt content
+                const decrypted = await decryptContent(pred.encrypted, nonce);
+
+                // Verify commitment hash
+                const isValid = await verifyCommitment(
+                    decrypted,
+                    nonce,
+                    pred.author,
+                    pred.created,
+                    pred.commitHash
+                );
+
+                if (!isValid) {
+                    alert('⚠️ ATTENZIONE: Verifica hash fallita!\n\nLa predizione potrebbe essere stata manomessa.\n\nRivela comunque?');
+                    const forceReveal = confirm('Continuare con il reveal nonostante l\'errore di verifica?');
+                    if (!forceReveal) return;
+                }
+
+                // Update prediction object
+                pred.revealed = true;
+                pred.revealNonce = nonce;
+                pred.revealContent = decrypted;
+                pred.plaintext = decrypted;
+
+                // Ask for result evaluation
+                const result = prompt('📊 Come è andata?\n\n1 = Corretta ✅\n2 = Sbagliata ❌\n3 = Parziale ⚠️\n\nInserisci 1, 2 o 3:');
+
+                if (result === '1') {
+                    pred.result = 'correct';
+                } else if (result === '2') {
+                    pred.result = 'wrong';
+                } else if (result === '3') {
+                    pred.result = 'partial';
+                } else {
+                    pred.result = null;
+                }
+
+                // Save to cluster storage
+                try {
+                    await window.ClusterStorage.savePredictionToCluster(pred);
+                    await window.ClusterStorage.updateHotCache(await window.ClusterStorage.loadAllPredictions());
+                } catch (error) {
+                    console.error('Error saving revealed prediction:', error);
+                }
+
+                // Update UI
+                renderFeed();
+                updateStats();
+                showRevealable(); // Refresh the revealable list
+
+                const resultEmoji = pred.result === 'correct' ? '✅' : pred.result === 'wrong' ? '❌' : pred.result === 'partial' ? '⚠️' : '📝';
+                alert(`${resultEmoji} Predizione rivelata con successo!\n\n"${pred.title}"\n\nOra è visibile pubblicamente nel feed.`);
+
+            } catch (error) {
+                alert('❌ Errore durante il reveal: ' + error.message);
+            }
         }
         
         function showInfo() {
@@ -1330,11 +2048,18 @@
         function getCategoryIcon(category) {
             const icons = {
                 crypto: '💰',
-                sport: '⚽',
+                ai: '🤖',
+                sports: '⚽',
+                sport: '⚽',  // backwards compatibility
                 politics: '🗳️',
-                tech: '🔬',
+                tech: '💻',
+                economy: '📈',
+                science: '🔬',
+                health: '🏥',
+                climate: '🌍',
+                space: '🚀',
                 personal: '👤',
-                other: '🌍'
+                other: '📝'
             };
             return icons[category] || '📝';
         }

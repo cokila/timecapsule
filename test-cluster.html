@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cluster Storage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin: 1.5rem 0 1rem 0;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: transform 150ms;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .output {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .info {
+            color: #667eea;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Cluster Storage System</h1>
+
+        <p>Test del sistema di storage scalabile per Time Capsule.</p>
+
+        <h2>1. Test Path Generation</h2>
+        <button onclick="testPathGeneration()">Run Test</button>
+        <div id="output1" class="output"></div>
+
+        <h2>2. Test Save Prediction</h2>
+        <button onclick="testSavePrediction()">Run Test</button>
+        <div id="output2" class="output"></div>
+
+        <h2>3. Test Load Predictions</h2>
+        <button onclick="testLoadPredictions()">Run Test</button>
+        <div id="output3" class="output"></div>
+
+        <h2>4. Test Search</h2>
+        <button onclick="testSearch()">Run Test</button>
+        <div id="output4" class="output"></div>
+
+        <h2>5. Test Indices</h2>
+        <button onclick="testIndices()">Run Test</button>
+        <div id="output5" class="output"></div>
+
+        <h2>6. Clear All Data</h2>
+        <button onclick="clearAllData()" style="background: #ef4444;">Clear Storage</button>
+        <div id="output6" class="output"></div>
+    </div>
+
+    <script src="cluster-storage.js"></script>
+    <script>
+        function log(elementId, message, type = 'info') {
+            const output = document.getElementById(elementId);
+            const span = document.createElement('span');
+            span.className = type;
+            span.textContent = message + '\n';
+            output.appendChild(span);
+        }
+
+        function clear(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        // Test 1: Path Generation
+        function testPathGeneration() {
+            clear('output1');
+            log('output1', '=== Test Path Generation ===\n', 'info');
+
+            try {
+                const testPredictions = [
+                    { language: 'it', category: 'crypto', revealDate: new Date('2026-03-15').getTime() },
+                    { language: 'en', category: 'ai', revealDate: new Date('2025-11-20').getTime() },
+                    { language: 'es', category: 'politics', revealDate: new Date('2027-06-10').getTime() }
+                ];
+
+                testPredictions.forEach((pred, i) => {
+                    const path = window.ClusterStorage.getClusterPath(pred);
+                    const date = new Date(pred.revealDate).toLocaleDateString();
+                    log('output1', `Test ${i+1}: ${pred.language}/${pred.category} (${date})`);
+                    log('output1', `Path: ${path}`, 'success');
+                    log('output1', '');
+                });
+
+                log('output1', '✅ Path generation test passed!', 'success');
+            } catch (error) {
+                log('output1', '❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 2: Save Prediction
+        async function testSavePrediction() {
+            clear('output2');
+            log('output2', '=== Test Save Prediction ===\n', 'info');
+
+            try {
+                const testPrediction = {
+                    id: 'pred_test_' + Date.now(),
+                    author: 'test_user',
+                    username: 'Test User',
+                    title: 'Test Prediction',
+                    category: 'crypto',
+                    language: 'it',
+                    tags: ['test', 'bitcoin'],
+                    created: Date.now(),
+                    revealDate: new Date('2026-06-01').getTime(),
+                    commitHash: 'sha256_test_hash',
+                    encrypted: 'test_encrypted_content',
+                    revealed: false,
+                    revealNonce: null,
+                    revealContent: null,
+                    metadata: {
+                        views: 0,
+                        comments: 0,
+                        upvotes: 0,
+                        shares: 0
+                    }
+                };
+
+                log('output2', 'Creating test prediction...');
+                log('output2', JSON.stringify(testPrediction, null, 2));
+                log('output2', '');
+
+                const path = await window.ClusterStorage.savePredictionToCluster(testPrediction);
+
+                log('output2', '✅ Prediction saved!', 'success');
+                log('output2', `Path: ${path}`, 'success');
+                log('output2', `ID: ${testPrediction.id}`, 'info');
+            } catch (error) {
+                log('output2', '❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 3: Load Predictions
+        async function testLoadPredictions() {
+            clear('output3');
+            log('output3', '=== Test Load Predictions ===\n', 'info');
+
+            try {
+                log('output3', 'Loading all predictions...');
+                const predictions = await window.ClusterStorage.loadAllPredictions();
+
+                log('output3', `Found ${predictions.length} predictions`, 'success');
+                log('output3', '');
+
+                if (predictions.length > 0) {
+                    predictions.forEach((pred, i) => {
+                        log('output3', `${i+1}. ${pred.title}`);
+                        log('output3', `   Lang: ${pred.language}, Cat: ${pred.category}`);
+                        log('output3', `   Path: ${pred.metadata?.clusterPath || 'N/A'}`, 'info');
+                        log('output3', '');
+                    });
+                } else {
+                    log('output3', 'No predictions found. Create one first!', 'info');
+                }
+
+                log('output3', '✅ Load test completed!', 'success');
+            } catch (error) {
+                log('output3', '❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 4: Search
+        async function testSearch() {
+            clear('output4');
+            log('output4', '=== Test Search Predictions ===\n', 'info');
+
+            try {
+                // Search by language
+                log('output4', '1. Search by language (it):');
+                const byLang = await window.ClusterStorage.searchPredictions({ language: 'it' });
+                log('output4', `   Found: ${byLang.length} predictions`, 'success');
+                log('output4', '');
+
+                // Search by category
+                log('output4', '2. Search by category (crypto):');
+                const byCat = await window.ClusterStorage.searchPredictions({ category: 'crypto' });
+                log('output4', `   Found: ${byCat.length} predictions`, 'success');
+                log('output4', '');
+
+                // Search by language + category
+                log('output4', '3. Search by language + category (it/crypto):');
+                const byBoth = await window.ClusterStorage.searchPredictions({
+                    language: 'it',
+                    category: 'crypto'
+                });
+                log('output4', `   Found: ${byBoth.length} predictions`, 'success');
+                log('output4', '');
+
+                log('output4', '✅ Search test completed!', 'success');
+            } catch (error) {
+                log('output4', '❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 5: Indices
+        async function testIndices() {
+            clear('output5');
+            log('output5', '=== Test Indices ===\n', 'info');
+
+            try {
+                log('output5', 'Loading global index...');
+                const globalIndex = await window.ClusterStorage.getGlobalIndex();
+
+                log('output5', '✅ Global Index:', 'success');
+                log('output5', `Total Predictions: ${globalIndex.totalPredictions}`);
+                log('output5', `Storage Usage: ${globalIndex.metadata.usagePercent}% (${globalIndex.metadata.totalSize})`);
+                log('output5', '');
+
+                log('output5', 'By Language:', 'info');
+                Object.entries(globalIndex.byLanguage).forEach(([lang, count]) => {
+                    if (count > 0) {
+                        log('output5', `  ${lang}: ${count}`);
+                    }
+                });
+                log('output5', '');
+
+                log('output5', 'By Category:', 'info');
+                Object.entries(globalIndex.byCategory).forEach(([cat, count]) => {
+                    if (count > 0) {
+                        log('output5', `  ${cat}: ${count}`);
+                    }
+                });
+                log('output5', '');
+
+                log('output5', 'By Year:', 'info');
+                Object.entries(globalIndex.byYear).forEach(([year, count]) => {
+                    log('output5', `  ${year}: ${count}`);
+                });
+                log('output5', '');
+
+                log('output5', '✅ Indices test completed!', 'success');
+            } catch (error) {
+                log('output5', '❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Clear All Data
+        function clearAllData() {
+            clear('output6');
+            log('output6', '=== Clear All Data ===\n', 'info');
+
+            const confirm = window.confirm('Are you sure you want to clear all predictions from localStorage?');
+
+            if (confirm) {
+                let count = 0;
+                const keys = Object.keys(localStorage);
+
+                keys.forEach(key => {
+                    if (key.startsWith('prediction_') ||
+                        key.startsWith('index_') ||
+                        key.startsWith('cache_')) {
+                        localStorage.removeItem(key);
+                        count++;
+                    }
+                });
+
+                log('output6', `✅ Cleared ${count} items from localStorage`, 'success');
+            } else {
+                log('output6', 'Operation cancelled', 'info');
+            }
+        }
+
+        // Run basic test on load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Cluster Storage Test Page loaded');
+            console.log('ClusterStorage available:', !!window.ClusterStorage);
+        });
+    </script>
+</body>
+</html>

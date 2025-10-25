@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Reveal Function</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #f9fafb;
+        }
+        .test-card {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            border-left: 4px solid #667eea;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .success {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        .info {
+            color: #667eea;
+        }
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Funzione "Da Rivelare"</h1>
+
+    <div class="test-card">
+        <h2>Test 1: Verifica funzione showRevealable()</h2>
+        <button onclick="test1()">Run Test 1</button>
+        <div id="result1"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Test 2: Verifica modal exists</h2>
+        <button onclick="test2()">Run Test 2</button>
+        <div id="result2"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Test 3: Apri modal manualmente</h2>
+        <button onclick="test3()">Run Test 3</button>
+        <div id="result3"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Test 4: Test completo con predizione mock</h2>
+        <button onclick="test4()">Run Test 4</button>
+        <div id="result4"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Test 5: Apri index.html e controlla console</h2>
+        <p>Apri <a href="index.html" target="_blank">index.html</a> e:</p>
+        <ol>
+            <li>Apri Console (F12)</li>
+            <li>Digita: <code>showRevealable</code> e premi Enter</li>
+            <li>Se vedi "function showRevealable()" = ✅ funzione esiste</li>
+            <li>Digita: <code>showRevealable()</code> e premi Enter</li>
+            <li>Se modal si apre = ✅ funziona!</li>
+            <li>Se errori = Copia l'errore qui sotto</li>
+        </ol>
+        <p class="info">Se vedi errori nella console, segnalali!</p>
+    </div>
+
+    <div class="test-card">
+        <h2>Debug Info</h2>
+        <button onclick="getDebugInfo()">Get Debug Info</button>
+        <pre id="debugInfo"></pre>
+    </div>
+
+    <!-- Simula la struttura base -->
+    <div id="modalRevealable" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; margin: 2rem auto; max-width: 600px; padding: 2rem; border-radius: 1rem;">
+            <h2>🔓 Modal Test</h2>
+            <p>Se vedi questo, il modal si apre correttamente!</p>
+            <button onclick="closeModal()">Chiudi</button>
+            <div id="revealableList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Test functions
+        function test1() {
+            const result = document.getElementById('result1');
+            result.innerHTML = '<p class="info">Testing...</p>';
+
+            try {
+                // Check if showRevealable exists
+                if (typeof showRevealable === 'function') {
+                    result.innerHTML = '<p class="success">✅ Funzione showRevealable() trovata!</p>';
+                    result.innerHTML += '<p>Prova a chiamarla...</p>';
+
+                    // Try to call it
+                    try {
+                        showRevealable();
+                        result.innerHTML += '<p class="success">✅ Funzione eseguita senza errori!</p>';
+                    } catch (e) {
+                        result.innerHTML += '<p class="error">❌ Errore durante esecuzione: ' + e.message + '</p>';
+                    }
+                } else {
+                    result.innerHTML = '<p class="error">❌ Funzione showRevealable() NON trovata!</p>';
+                    result.innerHTML += '<p>La funzione non è definita nell\'HTML principale.</p>';
+                }
+            } catch (e) {
+                result.innerHTML = '<p class="error">❌ Errore: ' + e.message + '</p>';
+            }
+        }
+
+        function test2() {
+            const result = document.getElementById('result2');
+            result.innerHTML = '<p class="info">Testing...</p>';
+
+            const modal = document.getElementById('modalRevealable');
+            if (modal) {
+                result.innerHTML = '<p class="success">✅ Modal #modalRevealable trovato!</p>';
+                result.innerHTML += `<p>Display: ${modal.style.display || 'default'}</p>`;
+                result.innerHTML += `<p>Classe: ${modal.className || 'nessuna'}</p>`;
+            } else {
+                result.innerHTML = '<p class="error">❌ Modal #modalRevealable NON trovato!</p>';
+            }
+        }
+
+        function test3() {
+            const result = document.getElementById('result3');
+            const modal = document.getElementById('modalRevealable');
+
+            if (modal) {
+                modal.style.display = 'block';
+                modal.classList.add('active');
+                result.innerHTML = '<p class="success">✅ Modal aperto! (Clicca "Chiudi" per chiudere)</p>';
+            } else {
+                result.innerHTML = '<p class="error">❌ Modal non trovato!</p>';
+            }
+        }
+
+        function test4() {
+            const result = document.getElementById('result4');
+            result.innerHTML = '<p class="info">Testing con dati mock...</p>';
+
+            // Mock data
+            const myUsername = 'test_user';
+            const predictions = [
+                {
+                    id: 'pred_test_1',
+                    author: 'test_user',
+                    title: 'Test Prediction Revealable',
+                    category: 'crypto',
+                    created: Date.now() - 86400000 * 10,
+                    revealDate: Date.now() - 86400000, // Yesterday (revealable!)
+                    revealed: false
+                },
+                {
+                    id: 'pred_test_2',
+                    author: 'test_user',
+                    title: 'Test Prediction Future',
+                    category: 'ai',
+                    created: Date.now(),
+                    revealDate: Date.now() + 86400000 * 10, // Future (not revealable)
+                    revealed: false
+                }
+            ];
+            const myNonces = {
+                'pred_test_1': 'test_nonce_123'
+            };
+
+            // Test getRevealablePredictions logic
+            const now = Date.now();
+            const revealable = predictions.filter(p => {
+                if (p.author !== myUsername) return false;
+                if (!myNonces[p.id]) return false;
+                if (p.revealed) return false;
+                if (p.revealDate > now) return false;
+                return true;
+            });
+
+            result.innerHTML = '<p class="success">✅ Test completato!</p>';
+            result.innerHTML += `<p>Predictions totali: ${predictions.length}</p>`;
+            result.innerHTML += `<p>Revealable trovate: ${revealable.length}</p>`;
+
+            if (revealable.length > 0) {
+                result.innerHTML += '<p class="success">✅ Logica filtering funziona!</p>';
+                result.innerHTML += '<pre>' + JSON.stringify(revealable, null, 2) + '</pre>';
+            } else {
+                result.innerHTML += '<p class="error">❌ Nessuna prediction revealable trovata (verifica logica)</p>';
+            }
+        }
+
+        function getDebugInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                indexHtmlPresent: window.location.pathname,
+                modalExists: !!document.getElementById('modalRevealable'),
+                showRevealableExists: typeof window.showRevealable !== 'undefined'
+            };
+
+            document.getElementById('debugInfo').textContent = JSON.stringify(info, null, 2);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modalRevealable');
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+        }
+
+        // Simula showRevealable per questo test
+        function showRevealable() {
+            alert('showRevealable() chiamata con successo!');
+            document.getElementById('modalRevealable').style.display = 'block';
+        }
+
+        console.log('Test page loaded. Ready to test!');
+    </script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test LocalStorage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #f9fafb;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            font-size: 1rem;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .success { color: #10b981; font-weight: bold; }
+        .error { color: #ef4444; font-weight: bold; }
+        .info { color: #667eea; }
+        pre {
+            background: #1f2937;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+        .test-box {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test LocalStorage - Predizioni</h1>
+
+        <div class="test-box">
+            <h3>Test 1: Verifica LocalStorage</h3>
+            <button onclick="test1()">Esegui Test 1</button>
+            <div id="result1"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Test 2: Mostra tutte le predizioni salvate</h3>
+            <button onclick="test2()">Esegui Test 2</button>
+            <div id="result2"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Test 3: Salva predizione test</h3>
+            <button onclick="test3()">Esegui Test 3</button>
+            <div id="result3"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Test 4: Cancella tutte le predizioni</h3>
+            <button onclick="test4()" style="background: #ef4444;">Cancella Tutto</button>
+            <div id="result4"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Test 5: Verifica problema salvataggio</h3>
+            <p class="info">Questo test simula esattamente cosa fa l'app</p>
+            <button onclick="test5()">Esegui Test 5</button>
+            <div id="result5"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>📊 Console Log</h3>
+            <button onclick="openIndexConsole()">Apri index.html con Console</button>
+            <p class="info">Apre index.html e puoi vedere i log nella console (F12)</p>
+        </div>
+    </div>
+
+    <script>
+        function test1() {
+            const result = document.getElementById('result1');
+            result.innerHTML = '<p class="info">Testing...</p>';
+
+            try {
+                // Check if localStorage works
+                localStorage.setItem('test_key', 'test_value');
+                const value = localStorage.getItem('test_key');
+
+                if (value === 'test_value') {
+                    result.innerHTML = '<p class="success">✅ LocalStorage funziona!</p>';
+                } else {
+                    result.innerHTML = '<p class="error">❌ LocalStorage NON funziona!</p>';
+                }
+
+                localStorage.removeItem('test_key');
+            } catch (e) {
+                result.innerHTML = '<p class="error">❌ Errore: ' + e.message + '</p>';
+            }
+        }
+
+        function test2() {
+            const result = document.getElementById('result2');
+            result.innerHTML = '<p class="info">Scanning localStorage...</p>';
+
+            try {
+                const predictions = [];
+                let total = 0;
+
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    total++;
+
+                    if (key.startsWith('prediction_')) {
+                        const data = localStorage.getItem(key);
+                        predictions.push(JSON.parse(data));
+                    }
+                }
+
+                result.innerHTML = `
+                    <p class="success">✅ Scansione completata!</p>
+                    <p><strong>Chiavi totali in localStorage:</strong> ${total}</p>
+                    <p><strong>Predizioni trovate:</strong> ${predictions.length}</p>
+                `;
+
+                if (predictions.length > 0) {
+                    result.innerHTML += '<p><strong>Predizioni:</strong></p>';
+                    result.innerHTML += '<pre>' + JSON.stringify(predictions, null, 2) + '</pre>';
+                } else {
+                    result.innerHTML += '<p class="error">❌ Nessuna predizione trovata in localStorage!</p>';
+                    result.innerHTML += '<p>Questo significa che le predizioni non vengono salvate, oppure vengono cancellate.</p>';
+                }
+            } catch (e) {
+                result.innerHTML = '<p class="error">❌ Errore: ' + e.message + '</p>';
+            }
+        }
+
+        function test3() {
+            const result = document.getElementById('result3');
+            result.innerHTML = '<p class="info">Salvando predizione test...</p>';
+
+            try {
+                const testPred = {
+                    id: 'pred_test_' + Date.now(),
+                    author: 'test_user',
+                    username: 'Test User',
+                    title: '🧪 Test Predizione Storage',
+                    category: 'crypto',
+                    language: 'it',
+                    tags: ['test'],
+                    created: Date.now(),
+                    revealDate: Date.now() + 86400000,
+                    commitHash: 'test_hash_' + Math.random(),
+                    encrypted: 'test_encrypted_content',
+                    revealed: false,
+                    metadata: {
+                        views: 0,
+                        comments: 0,
+                        upvotes: 0,
+                        shares: 0
+                    }
+                };
+
+                const key = `prediction_${testPred.id}`;
+                localStorage.setItem(key, JSON.stringify(testPred));
+
+                result.innerHTML = `
+                    <p class="success">✅ Predizione test salvata!</p>
+                    <p><strong>Key:</strong> ${key}</p>
+                    <p><strong>ID:</strong> ${testPred.id}</p>
+                    <p><strong>Titolo:</strong> ${testPred.title}</p>
+                    <p class="info">Ora esegui Test 2 per verificare che sia salvata!</p>
+                `;
+            } catch (e) {
+                result.innerHTML = '<p class="error">❌ Errore: ' + e.message + '</p>';
+            }
+        }
+
+        function test4() {
+            const result = document.getElementById('result4');
+
+            const confirm = window.confirm('⚠️ Cancellare TUTTE le predizioni da localStorage?');
+            if (!confirm) {
+                result.innerHTML = '<p>Operazione annullata</p>';
+                return;
+            }
+
+            result.innerHTML = '<p class="info">Cancellando...</p>';
+
+            try {
+                let count = 0;
+                const keysToDelete = [];
+
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('prediction_')) {
+                        keysToDelete.push(key);
+                    }
+                }
+
+                keysToDelete.forEach(key => {
+                    localStorage.removeItem(key);
+                    count++;
+                });
+
+                result.innerHTML = `
+                    <p class="success">✅ Cancellate ${count} predizioni!</p>
+                    <p class="info">Ora esegui Test 2 per verificare che siano sparite.</p>
+                `;
+            } catch (e) {
+                result.innerHTML = '<p class="error">❌ Errore: ' + e.message + '</p>';
+            }
+        }
+
+        function test5() {
+            const result = document.getElementById('result5');
+            result.innerHTML = '<p class="info">Simulando comportamento app...</p>';
+
+            try {
+                // 1. Salva una predizione (come fa createPrediction)
+                const testPred = {
+                    id: 'pred_sim_' + Date.now(),
+                    author: 'test_user',
+                    username: 'Test User',
+                    title: '🔍 Simulazione Salvataggio',
+                    category: 'crypto',
+                    language: 'it',
+                    tags: [],
+                    created: Date.now(),
+                    revealDate: Date.now() + 86400000,
+                    commitHash: 'sim_hash',
+                    encrypted: 'sim_encrypted',
+                    revealed: false,
+                    metadata: { views: 0, comments: 0, upvotes: 0, shares: 0 }
+                };
+
+                const key = `prediction_${testPred.id}`;
+                localStorage.setItem(key, JSON.stringify(testPred));
+
+                result.innerHTML = '<p class="success">✅ Step 1: Predizione salvata</p>';
+
+                // 2. Ricarica (come fa loadPredictions)
+                const predictions = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k.startsWith('prediction_')) {
+                        const data = localStorage.getItem(k);
+                        predictions.push(JSON.parse(data));
+                    }
+                }
+
+                result.innerHTML += `<p class="success">✅ Step 2: Ricaricate ${predictions.length} predizioni</p>`;
+
+                // 3. Verifica se la nostra predizione è presente
+                const found = predictions.find(p => p.id === testPred.id);
+
+                if (found) {
+                    result.innerHTML += '<p class="success">✅ Step 3: Predizione trovata dopo reload simulato!</p>';
+                    result.innerHTML += '<p class="success"><strong>✅ IL SALVATAGGIO FUNZIONA!</strong></p>';
+                    result.innerHTML += '<pre>' + JSON.stringify(found, null, 2) + '</pre>';
+                } else {
+                    result.innerHTML += '<p class="error">❌ Step 3: Predizione NON trovata!</p>';
+                    result.innerHTML += '<p class="error"><strong>❌ PROBLEMA: Il salvataggio non persiste!</strong></p>';
+                }
+            } catch (e) {
+                result.innerHTML += '<p class="error">❌ Errore: ' + e.message + '</p>';
+            }
+        }
+
+        function openIndexConsole() {
+            window.open('index.html', '_blank');
+            alert('Aperto index.html in una nuova tab!\n\n1. Premi F12 per aprire Console\n2. Digita: localStorage\n3. Vedi tutte le chiavi salvate\n4. Cerca "prediction_" per vedere le predizioni');
+        }
+    </script>
+</body>
+</html>

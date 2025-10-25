@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "description": "Time Capsule - Scalable Cluster Storage Schema",
+  "maxSize": "100MB",
+  "structure": {
+    "predictions": {
+      "path": "data/predictions/[language]/[category]/[year]/[quarter]/",
+      "languages": ["it", "en", "es", "fr", "de", "pt", "zh", "ja", "ko"],
+      "categories": ["crypto", "ai", "politics", "tech", "sports", "economy", "science", "health", "climate", "space"],
+      "quarters": {
+        "Q1": {"months": [1, 2, 3], "description": "January-March"},
+        "Q2": {"months": [4, 5, 6], "description": "April-June"},
+        "Q3": {"months": [7, 8, 9], "description": "July-September"},
+        "Q4": {"months": [10, 11, 12], "description": "October-December"}
+      },
+      "fileNaming": "pred_[id]_[timestamp].json",
+      "maxFileSize": "50KB",
+      "maxFilesPerQuarter": 1000
+    },
+    "indices": {
+      "global": "data/indices/global_index.json",
+      "byRevealDate": "data/indices/by_reveal_date.json",
+      "byCreatedDate": "data/indices/by_created_date.json",
+      "stats": "data/indices/stats.json"
+    },
+    "cache": {
+      "hot": "data/cache/hot.json",
+      "byLanguage": "data/cache/by_language/[lang].json",
+      "byCategory": "data/cache/by_category/[category].json",
+      "ttl": 3600,
+      "maxEntries": 100
+    }
+  },
+  "predictionSchema": {
+    "id": "string (unique, format: pred_[uuid])",
+    "author": "string (user id)",
+    "username": "string",
+    "title": "string (max 200 chars)",
+    "category": "string (from categories list)",
+    "language": "string (ISO 639-1 code)",
+    "tags": "array of strings",
+    "created": "number (unix timestamp ms)",
+    "revealDate": "number (unix timestamp ms)",
+    "commitHash": "string (SHA-256)",
+    "encrypted": "string (AES-256-GCM)",
+    "revealed": "boolean",
+    "revealNonce": "string | null",
+    "revealContent": "string | null",
+    "metadata": {
+      "views": "number",
+      "comments": "number",
+      "upvotes": "number",
+      "shares": "number",
+      "clusterPath": "string (storage path)"
+    }
+  },
+  "indexSchema": {
+    "lastUpdated": "number (unix timestamp)",
+    "totalPredictions": "number",
+    "byLanguage": "object {[lang]: count}",
+    "byCategory": "object {[category]: count}",
+    "byYear": "object {[year]: count}",
+    "predictions": "array of prediction summaries"
+  },
+  "scalability": {
+    "estimatedCapacity": {
+      "100MB": "~2000 predictions (50KB each)",
+      "1GB": "~20000 predictions",
+      "10GB": "~200000 predictions"
+    },
+    "queryStrategy": {
+      "byLanguage": "Direct path lookup: /[lang]/",
+      "byCategory": "Direct path lookup: /[lang]/[category]/",
+      "byDate": "Quarter-based clustering: /[year]/[quarter]/",
+      "global": "Use indices for cross-cluster queries"
+    }
+  }
+}

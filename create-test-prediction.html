@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crea Predizione Test Revealable</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .info {
+            background: #dbeafe;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3b82f6;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .success {
+            background: #d1fae5;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            border-left: 4px solid #10b981;
+        }
+        .step {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            border-left: 3px solid #667eea;
+        }
+        code {
+            background: #1f2937;
+            color: #10b981;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background: #fef3c7;
+            color: #f59e0b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Crea Predizione Test Revealable</h1>
+
+        <div class="info">
+            <strong>🎯 Scopo:</strong> Creare una predizione con reveal date PASSATA per testare la funzione "Da Rivelare".
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Importante:</strong> Devi prima aprire <code>index.html</code> e impostare la master password, poi torna qui.
+        </div>
+
+        <h3>📋 Istruzioni:</h3>
+
+        <div class="step">
+            <strong>Passo 1:</strong> Apri <a href="index.html" target="_blank">index.html</a> nel browser
+        </div>
+
+        <div class="step">
+            <strong>Passo 2:</strong> Imposta master password se è la prima volta
+        </div>
+
+        <div class="step">
+            <strong>Passo 3:</strong> Apri Console (F12) e copia/incolla questo codice:
+        </div>
+
+        <textarea id="code" readonly style="width: 100%; height: 300px; font-family: monospace; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; margin: 1rem 0;">
+// ===== CODICE PER CREARE PREDIZIONE TEST REVEALABLE =====
+
+// Funzione helper per creare hash SHA-256
+async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Funzione helper per criptare
+async function deriveKey(nonce) {
+    const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(nonce),
+        'PBKDF2',
+        false,
+        ['deriveKey']
+    );
+    return await crypto.subtle.deriveKey(
+        {
+            name: 'PBKDF2',
+            salt: new TextEncoder().encode('timecapsule-salt-v1'),
+            iterations: 100000,
+            hash: 'SHA-256'
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt', 'decrypt']
+    );
+}
+
+async function encryptContent(plaintext, nonce) {
+    const key = await deriveKey(nonce);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encodedText = new TextEncoder().encode(plaintext);
+    const ciphertext = await crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv: iv },
+        key,
+        encodedText
+    );
+    const combined = new Uint8Array(iv.length + ciphertext.byteLength);
+    combined.set(iv, 0);
+    combined.set(new Uint8Array(ciphertext), iv.length);
+    return btoa(String.fromCharCode(...combined));
+}
+
+// Genera nonce
+function generateNonce() {
+    const array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// CREA PREDIZIONE DI TEST
+async function createTestRevealable() {
+    console.log('🧪 Creazione predizione test revealable...');
+
+    const content = 'Questa è una predizione di test per verificare la funzione Da Rivelare. Bitcoin raggiungerà $150,000 entro fine anno!';
+    const nonce = generateNonce();
+    const timestamp = Date.now();
+
+    // Reveal date: IERI (così è già revealable!)
+    const revealDate = Date.now() - (24 * 60 * 60 * 1000);
+
+    // Crea hash commitment
+    const commitData = content + nonce + myUsername + timestamp;
+    const commitHash = await sha256(commitData);
+
+    // Cripta contenuto
+    const encrypted = await encryptContent(content, nonce);
+
+    // Crea predizione
+    const prediction = {
+        id: 'pred_test_' + timestamp,
+        author: myUsername,
+        username: myUsername,
+        title: '🧪 Test Predizione Revealable',
+        category: 'crypto',
+        language: 'it',
+        tags: ['test', 'revealable'],
+        created: timestamp,
+        revealDate: revealDate,
+        commitHash: commitHash,
+        encrypted: encrypted,
+        revealed: false,
+        revealNonce: null,
+        revealContent: null,
+        metadata: {
+            views: 0,
+            comments: 0,
+            upvotes: 0,
+            shares: 0
+        }
+    };
+
+    // Salva nonce
+    myNonces[prediction.id] = nonce;
+    await saveEncryptedNonces();
+
+    // Salva predizione
+    await window.ClusterStorage.savePredictionToCluster(prediction);
+    predictions.unshift(prediction);
+
+    // Update UI
+    renderFeed();
+    updateStats();
+    await window.ClusterStorage.updateHotCache(await window.ClusterStorage.loadAllPredictions());
+
+    console.log('✅ Predizione test creata!');
+    console.log('ID:', prediction.id);
+    console.log('Reveal date:', new Date(prediction.revealDate).toLocaleString());
+    console.log('Ora puoi cliccare "Da Rivelare"!');
+
+    alert('✅ Predizione test creata!\n\nReveal date: IERI\nOra puoi cliccare "🔓 Da Rivelare" per vederla!');
+}
+
+// ESEGUI
+createTestRevealable();
+</textarea>
+
+        <button onclick="copyCode()">📋 Copia Codice</button>
+
+        <div class="step" style="margin-top: 1.5rem;">
+            <strong>Passo 4:</strong> Incolla nella Console e premi Enter
+        </div>
+
+        <div class="step">
+            <strong>Passo 5:</strong> Vedrai "✅ Predizione test creata!"
+        </div>
+
+        <div class="step">
+            <strong>Passo 6:</strong> Clicca "🔓 Da Rivelare" e vedrai la predizione!
+        </div>
+
+        <div id="result"></div>
+
+        <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e5e7eb;">
+
+        <h3>🎯 Alternative più semplice:</h3>
+
+        <div class="info">
+            <strong>Opzione 1:</strong> Crea una predizione normale ma imposta la reveal date a IERI:
+            <br><br>
+            1. Apri index.html<br>
+            2. Click "Nuova Predizione"<br>
+            3. Compila form normalmente<br>
+            4. Per la data, <strong>usa Developer Tools</strong> per modificare l'input e mettere data passata<br>
+            5. Crea predizione<br>
+            6. Ora appare in "Da Rivelare"!
+        </div>
+
+        <div class="info" style="margin-top: 1rem;">
+            <strong>Opzione 2:</strong> Modifico il codice per permetterti di testare anche con date future (modalità debug)
+        </div>
+
+        <button onclick="showOption2()">🛠️ Voglio Opzione 2 (Modalità Debug)</button>
+
+        <div id="option2Result"></div>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('code');
+            code.select();
+            document.execCommand('copy');
+
+            const result = document.getElementById('result');
+            result.innerHTML = '<div class="success"><strong>✅ Codice copiato!</strong><br>Ora incollalo nella Console (F12) di index.html</div>';
+        }
+
+        function showOption2() {
+            const result = document.getElementById('option2Result');
+            result.innerHTML = `
+                <div class="success" style="margin-top: 1rem;">
+                    <strong>✅ Ti creo una modalità debug!</strong>
+                    <p>Fammi sapere e modifico il codice per mostrare TUTTE le predizioni nella lista "Da Rivelare", indipendentemente dalla data.</p>
+                    <p>Così puoi testare subito anche con predizioni future!</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

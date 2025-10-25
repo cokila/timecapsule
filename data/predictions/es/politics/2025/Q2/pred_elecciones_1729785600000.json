@@ -1,0 +1,23 @@
+{
+  "id": "pred_elecciones",
+  "author": "user_politico",
+  "username": "Analista Político",
+  "title": "Resultados elecciones europeas 2025",
+  "category": "politics",
+  "language": "es",
+  "tags": ["elecciones", "europa", "política"],
+  "created": 1729785600000,
+  "revealDate": 1751328000000,
+  "commitHash": "sha256_esp_pol_hash_12345",
+  "encrypted": "U2FsdGVkX1+contenido_encriptado_aqui",
+  "revealed": false,
+  "revealNonce": null,
+  "revealContent": null,
+  "metadata": {
+    "views": 0,
+    "comments": 0,
+    "upvotes": 0,
+    "shares": 0,
+    "clusterPath": "data/predictions/es/politics/2025/Q2/"
+  }
+}

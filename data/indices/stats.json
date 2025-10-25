@@ -1,0 +1,22 @@
+{
+  "lastUpdated": 1729785600000,
+  "global": {
+    "totalPredictions": 0,
+    "totalUsers": 0,
+    "totalRevealed": 0,
+    "totalPending": 0,
+    "totalViews": 0,
+    "totalComments": 0
+  },
+  "trending": {
+    "hotPredictions": [],
+    "topAuthors": [],
+    "topCategories": [],
+    "topLanguages": []
+  },
+  "accuracy": {
+    "overall": 0,
+    "byCategory": {},
+    "byUser": {}
+  }
+}

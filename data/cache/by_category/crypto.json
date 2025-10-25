@@ -1,0 +1,23 @@
+{
+  "category": "crypto",
+  "lastUpdated": 1729785600000,
+  "ttl": 3600,
+  "totalPredictions": 1,
+  "hotPredictions": [
+    {
+      "id": "pred_btc_001",
+      "title": "Bitcoin supererà i $150K nel Q1 2026",
+      "language": "it",
+      "author": "Crypto Expert",
+      "created": 1729785600000,
+      "revealDate": 1743465600000,
+      "views": 0,
+      "upvotes": 0
+    }
+  ],
+  "byLanguage": {
+    "it": 1,
+    "en": 0,
+    "es": 0
+  }
+}

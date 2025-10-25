@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Persistence Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .test-box {
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            font-size: 1rem;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .success {
+            color: #10b981;
+            font-weight: bold;
+            background: #d1fae5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+            background: #fee;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .info {
+            color: #3b82f6;
+            background: #dbeafe;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        pre {
+            background: #1f2937;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.875rem;
+        }
+        .step {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 0.5rem;
+        }
+        .step.done {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        .step.failed {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test LocalStorage Persistence Fix</h1>
+
+        <div class="info">
+            <strong>🎯 Obiettivo:</strong> Verificare che le predizioni create dagli utenti vengano salvate in localStorage e persistano dopo il reload della pagina.
+        </div>
+
+        <div class="test-box">
+            <h3>📊 Stato Attuale LocalStorage</h3>
+            <button onclick="checkCurrentState()">🔍 Controlla Stato</button>
+            <div id="stateResult"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Test 1: Simula First Load</h3>
+            <p>Simula comportamento al primo caricamento (nessun flag hasLoadedBefore)</p>
+            <button onclick="test1()">▶️ Esegui Test 1</button>
+            <div id="result1"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Test 2: Simula Creazione Predizione</h3>
+            <p>Simula creazione di una predizione utente e salvataggio in localStorage</p>
+            <button onclick="test2()">▶️ Esegui Test 2</button>
+            <div id="result2"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Test 3: Simula Reload (Secondo Caricamento)</h3>
+            <p>Simula ricaricamento pagina - deve caricare predizioni salvate</p>
+            <button onclick="test3()">▶️ Esegui Test 3</button>
+            <div id="result3"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>Test 4: Completo (First Load → Create → Reload)</h3>
+            <p>Test completo del flusso utente</p>
+            <button onclick="test4()">▶️ Esegui Test Completo</button>
+            <div id="result4"></div>
+        </div>
+
+        <div class="test-box">
+            <h3>🗑️ Pulizia</h3>
+            <button onclick="cleanup()" style="background: #ef4444;">🗑️ Cancella Tutto</button>
+            <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.5rem;">
+                Rimuove tutte le predizioni test e flag da localStorage
+            </p>
+            <div id="cleanupResult"></div>
+        </div>
+    </div>
+
+    <script src="cluster-storage.js"></script>
+
+    <script>
+        function checkCurrentState() {
+            const result = document.getElementById('stateResult');
+
+            const hasLoadedBefore = localStorage.getItem('hasLoadedBefore');
+            const predictionCount = Object.keys(localStorage)
+                .filter(key => key.startsWith('prediction_'))
+                .length;
+
+            const allKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('prediction_')) {
+                    allKeys.push(key);
+                }
+            }
+
+            result.innerHTML = `
+                <div class="info" style="margin-top: 1rem;">
+                    <strong>📊 Stato LocalStorage:</strong><br>
+                    <strong>hasLoadedBefore:</strong> ${hasLoadedBefore || 'null (primo caricamento)'}<br>
+                    <strong>Predizioni salvate:</strong> ${predictionCount}<br>
+                    ${predictionCount > 0 ? `<strong>Chiavi:</strong><br>${allKeys.join('<br>')}` : ''}
+                </div>
+            `;
+        }
+
+        async function test1() {
+            const result = document.getElementById('result1');
+            result.innerHTML = '<div class="info">🔄 Test in esecuzione...</div>';
+
+            try {
+                // Step 1: Clear flag
+                localStorage.removeItem('hasLoadedBefore');
+
+                // Step 2: Simula loadPredictions() - first time
+                const predictions = await window.ClusterStorage.loadAllPredictions();
+
+                let testResult = '';
+                if (predictions.length === 0) {
+                    const hasLoadedBefore = localStorage.getItem('hasLoadedBefore');
+
+                    if (!hasLoadedBefore) {
+                        // Simula comportamento: mostra esempi
+                        localStorage.setItem('hasLoadedBefore', 'true');
+                        testResult = `
+                            <div class="success">
+                                ✅ Test 1 PASSED<br>
+                                <div class="step done">
+                                    <strong>Step 1:</strong> hasLoadedBefore era null ✓
+                                </div>
+                                <div class="step done">
+                                    <strong>Step 2:</strong> Nessuna predizione trovata ✓
+                                </div>
+                                <div class="step done">
+                                    <strong>Step 3:</strong> Flag hasLoadedBefore impostato a 'true' ✓
+                                </div>
+                                <div class="step done">
+                                    <strong>Step 4:</strong> Mostrerebbero predizioni di esempio ✓
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        testResult = '<div class="error">❌ Test 1 FAILED: Flag già impostato</div>';
+                    }
+                } else {
+                    testResult = '<div class="error">❌ Test 1 FAILED: Trovate predizioni esistenti, pulisci localStorage</div>';
+                }
+
+                result.innerHTML = testResult;
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Errore: ${error.message}</div>`;
+            }
+        }
+
+        async function test2() {
+            const result = document.getElementById('result2');
+            result.innerHTML = '<div class="info">🔄 Test in esecuzione...</div>';
+
+            try {
+                // Crea predizione test
+                const testPred = {
+                    id: 'pred_test_persist_' + Date.now(),
+                    author: 'test_user',
+                    username: 'Test User',
+                    title: '🧪 Test Persistence',
+                    category: 'crypto',
+                    language: 'it',
+                    tags: ['test'],
+                    created: Date.now(),
+                    revealDate: Date.now() + 86400000,
+                    commitHash: 'test_hash_' + Math.random(),
+                    encrypted: 'test_encrypted_content',
+                    revealed: false,
+                    metadata: {
+                        views: 0,
+                        comments: 0,
+                        upvotes: 0,
+                        shares: 0
+                    }
+                };
+
+                // Salva usando ClusterStorage (come fa createPrediction())
+                await window.ClusterStorage.savePredictionToCluster(testPred);
+
+                // Verifica che sia stata salvata
+                const storageKey = `prediction_${testPred.id}`;
+                const saved = localStorage.getItem(storageKey);
+
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    result.innerHTML = `
+                        <div class="success">
+                            ✅ Test 2 PASSED<br>
+                            <div class="step done">
+                                <strong>Step 1:</strong> Predizione creata ✓
+                            </div>
+                            <div class="step done">
+                                <strong>Step 2:</strong> savePredictionToCluster() chiamato ✓
+                            </div>
+                            <div class="step done">
+                                <strong>Step 3:</strong> Salvata in localStorage ✓
+                            </div>
+                            <div class="step done">
+                                <strong>Chiave:</strong> ${storageKey} ✓
+                            </div>
+                            <div class="step done">
+                                <strong>ID:</strong> ${parsed.id} ✓
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = '<div class="error">❌ Test 2 FAILED: Predizione non salvata in localStorage</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Errore: ${error.message}</div>`;
+            }
+        }
+
+        async function test3() {
+            const result = document.getElementById('result3');
+            result.innerHTML = '<div class="info">🔄 Test in esecuzione...</div>';
+
+            try {
+                // Simula reload: carica predizioni
+                const predictions = await window.ClusterStorage.loadAllPredictions();
+
+                if (predictions.length > 0) {
+                    // Verifica che siano le predizioni dell'utente, non esempi
+                    const testPreds = predictions.filter(p => p.id.includes('test_persist'));
+
+                    if (testPreds.length > 0) {
+                        result.innerHTML = `
+                            <div class="success">
+                                ✅ Test 3 PASSED<br>
+                                <div class="step done">
+                                    <strong>Step 1:</strong> loadAllPredictions() chiamato ✓
+                                </div>
+                                <div class="step done">
+                                    <strong>Step 2:</strong> Trovate ${predictions.length} predizioni ✓
+                                </div>
+                                <div class="step done">
+                                    <strong>Step 3:</strong> Trovate ${testPreds.length} predizioni test ✓
+                                </div>
+                                <div class="step done">
+                                    <strong>Step 4:</strong> Predizioni persistite dopo reload simulato ✓
+                                </div>
+                            </div>
+                            <pre>${JSON.stringify(testPreds, null, 2)}</pre>
+                        `;
+                    } else {
+                        result.innerHTML = `
+                            <div class="error">
+                                ❌ Test 3 FAILED<br>
+                                Trovate ${predictions.length} predizioni ma nessuna test_persist<br>
+                                Potrebbe essere che non hai eseguito Test 2 prima
+                            </div>
+                        `;
+                    }
+                } else {
+                    result.innerHTML = `
+                        <div class="error">
+                            ❌ Test 3 FAILED<br>
+                            Nessuna predizione caricata dopo reload simulato<br>
+                            Esegui prima Test 2 per creare una predizione
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Errore: ${error.message}</div>`;
+            }
+        }
+
+        async function test4() {
+            const result = document.getElementById('result4');
+            result.innerHTML = '<div class="info">🔄 Test completo in esecuzione...</div>';
+
+            try {
+                const steps = [];
+
+                // STEP 1: First Load
+                localStorage.removeItem('hasLoadedBefore');
+                let predictions = await window.ClusterStorage.loadAllPredictions();
+
+                if (predictions.length === 0 && !localStorage.getItem('hasLoadedBefore')) {
+                    localStorage.setItem('hasLoadedBefore', 'true');
+                    steps.push('<div class="step done">✅ Step 1: First Load simulato (mostrerebbe esempi)</div>');
+                } else {
+                    steps.push('<div class="step failed">❌ Step 1: FAILED</div>');
+                }
+
+                // STEP 2: Create Prediction
+                const testPred = {
+                    id: 'pred_complete_test_' + Date.now(),
+                    author: 'test_user',
+                    username: 'Test User',
+                    title: '🧪 Complete Test Prediction',
+                    category: 'tech',
+                    language: 'it',
+                    tags: ['test', 'complete'],
+                    created: Date.now(),
+                    revealDate: Date.now() + 86400000,
+                    commitHash: 'test_hash_' + Math.random(),
+                    encrypted: 'test_encrypted',
+                    revealed: false,
+                    metadata: { views: 0, comments: 0, upvotes: 0, shares: 0 }
+                };
+
+                await window.ClusterStorage.savePredictionToCluster(testPred);
+                const saved = localStorage.getItem(`prediction_${testPred.id}`);
+
+                if (saved) {
+                    steps.push('<div class="step done">✅ Step 2: Predizione creata e salvata</div>');
+                } else {
+                    steps.push('<div class="step failed">❌ Step 2: FAILED - non salvata</div>');
+                }
+
+                // STEP 3: Reload
+                predictions = await window.ClusterStorage.loadAllPredictions();
+                const found = predictions.find(p => p.id === testPred.id);
+
+                if (found) {
+                    steps.push('<div class="step done">✅ Step 3: Reload simulato - predizione caricata</div>');
+                } else {
+                    steps.push('<div class="step failed">❌ Step 3: FAILED - predizione non caricata</div>');
+                }
+
+                // STEP 4: Verify hasLoadedBefore
+                const hasFlag = localStorage.getItem('hasLoadedBefore');
+                if (hasFlag === 'true') {
+                    steps.push('<div class="step done">✅ Step 4: Flag hasLoadedBefore corretto</div>');
+                } else {
+                    steps.push('<div class="step failed">❌ Step 4: FAILED - flag mancante</div>');
+                }
+
+                const allPassed = steps.every(s => s.includes('done'));
+
+                result.innerHTML = `
+                    <div class="${allPassed ? 'success' : 'error'}">
+                        ${allPassed ? '✅ TEST COMPLETO PASSED' : '❌ TEST COMPLETO FAILED'}<br><br>
+                        ${steps.join('')}
+                    </div>
+                    ${found ? '<pre>' + JSON.stringify(found, null, 2) + '</pre>' : ''}
+                `;
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Errore: ${error.message}</div>`;
+            }
+        }
+
+        function cleanup() {
+            const result = document.getElementById('cleanupResult');
+
+            const keysToDelete = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('prediction_') &&
+                    (key.includes('test_persist') || key.includes('complete_test'))) {
+                    keysToDelete.push(key);
+                }
+            }
+
+            keysToDelete.forEach(key => localStorage.removeItem(key));
+            localStorage.removeItem('hasLoadedBefore');
+
+            result.innerHTML = `
+                <div class="success" style="margin-top: 1rem;">
+                    ✅ Pulizia completata!<br>
+                    <strong>Rimossi:</strong> ${keysToDelete.length} predizioni test<br>
+                    <strong>Flag hasLoadedBefore:</strong> rimosso<br>
+                    <br>
+                    Ora puoi rieseguire i test
+                </div>
+            `;
+        }
+
+        // Auto-check stato all'avvio
+        window.onload = () => {
+            checkCurrentState();
+        };
+    </script>
+</body>
+</html>

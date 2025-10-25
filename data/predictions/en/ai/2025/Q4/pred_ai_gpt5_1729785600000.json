@@ -1,0 +1,23 @@
+{
+  "id": "pred_ai_gpt5",
+  "author": "user_ai_researcher",
+  "username": "AI Researcher",
+  "title": "GPT-5 will be released before end of 2025",
+  "category": "ai",
+  "language": "en",
+  "tags": ["openai", "gpt-5", "llm"],
+  "created": 1729785600000,
+  "revealDate": 1735689600000,
+  "commitHash": "sha256_xyz789abc123def456789",
+  "encrypted": "U2FsdGVkX1+encrypted_prediction_content",
+  "revealed": false,
+  "revealNonce": null,
+  "revealContent": null,
+  "metadata": {
+    "views": 0,
+    "comments": 0,
+    "upvotes": 0,
+    "shares": 0,
+    "clusterPath": "data/predictions/en/ai/2025/Q4/"
+  }
+}

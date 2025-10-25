@@ -47,10 +47,33 @@ L'app è hostata gratuitamente su GitHub Pages:
 ## 🛠️ Tech Stack
 
 - **Frontend**: Vanilla HTML/CSS/JS (zero dependencies!)
-- **Storage**: GitHub repository (JSON files)
-- **Crypto**: Web Crypto API
+- **Storage**: Cluster Storage System (scalable to 100MB)
+  - Organized by: Language / Category / Year / Quarter
+  - Smart caching and indexing
+  - Support for 9 languages, 10 categories
+- **Crypto**: Web Crypto API (SHA-256, AES-GCM)
 - **Hosting**: GitHub Pages (free CDN)
 - **PWA**: Service Worker per offline
+
+## 📦 Cluster Storage
+
+Le predizioni sono organizzate in cluster per massima scalabilità:
+
+```
+data/predictions/
+├── [language]/      # it, en, es, fr, de, pt, zh, ja, ko
+│   ├── [category]/  # crypto, ai, politics, tech, sports, etc.
+│   │   ├── [year]/  # 2025, 2026, 2027...
+│   │   │   └── [quarter]/  # Q1, Q2, Q3, Q4
+│   │   │       └── pred_[id]_[timestamp].json
+│   │   └── index.json
+│   └── cache/       # Hot cache, language cache, category cache
+└── indices/         # Global index, stats, etc.
+```
+
+**Capacity:** ~2,000 predizioni (50KB each) con limite 100MB
+
+Vedi [CLUSTER_STORAGE.md](./CLUSTER_STORAGE.md) per dettagli completi.
 
 ## 🤝 Contributing
 
